@@ -1,0 +1,9 @@
+target/
+.idea/
+*.iml
+.vscode/
+*.log
+
+# Local model artifacts used for testing (ONNX weights are large; do not commit).
+/models/
+*.onnx
