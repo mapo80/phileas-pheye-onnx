@@ -219,9 +219,9 @@ public class LocalPhEyeDetector implements PhEyeDetector {
             collectCandidates(words, window[0], window[1], labelList, candidates);
         }
 
-        // 4. One global greedy pass. Identical spans found in two overlapping windows collide here
-        //    and only the highest-scoring copy survives, so this also deduplicates.
-        final List<Candidate> selected = greedyNonOverlap(candidates);
+        // 4. Reduce overlapping candidates. Identical spans found in two overlapping windows collide
+        //    here and only the highest-scoring copy survives, so this also deduplicates.
+        final List<Candidate> selected = decode(candidates, options.decodeStrategy(), labelList.size());
 
         // 5. Map word spans -> char offsets -> PhEyeSpan.
         final List<PhEyeSpan> spans = new ArrayList<>();
@@ -358,7 +358,12 @@ public class LocalPhEyeDetector implements PhEyeDetector {
 
         final float[][][] logits = runModel(inputIds, attentionMask, wordsMask, numWords, spanIdx, spanMask);
 
-        final double threshold = options.detectionThreshold();
+        // Resolved once per label rather than per candidate: thresholdFor() lowercases and looks up.
+        final double[] thresholds = new double[labelList.size()];
+        for (int c = 0; c < labelList.size(); c++) {
+            thresholds[c] = options.thresholdFor(labelList.get(c));
+        }
+
         for (int i = 0; i < numWords; i++) {
             for (int k = 0; k < spansPerWord; k++) {
                 final int end = i + k;
@@ -367,7 +372,7 @@ public class LocalPhEyeDetector implements PhEyeDetector {
                 }
                 for (int c = 0; c < labelList.size(); c++) {
                     final double prob = sigmoid(logits[i][k][c]);
-                    if (prob > threshold) {
+                    if (prob > thresholds[c]) {
                         out.add(new Candidate(from + i, from + end, c, prob));
                     }
                 }
@@ -433,6 +438,38 @@ public class LocalPhEyeDetector implements PhEyeDetector {
                 tensor.close();
             }
         }
+
+    }
+
+    /**
+     * Reduce candidates according to the configured strategy.
+     *
+     * <p>{@code FLAT_GREEDY} is upstream's single pass across all labels. {@code PER_LABEL_GREEDY}
+     * partitions by label first, so a high-scoring span of one label can no longer delete a
+     * lower-scoring span of another over the same words -- the case where a spurious ORGANIZATION
+     * silently removes a correct PERSON and the name goes unmasked.
+     */
+    static List<Candidate> decode(final List<Candidate> candidates, final LocalPhEyeOptions.DecodeStrategy strategy,
+                                  final int numClasses) {
+
+        if (strategy == LocalPhEyeOptions.DecodeStrategy.FLAT_GREEDY) {
+            return greedyNonOverlap(candidates);
+        }
+
+        final List<Candidate> kept = new ArrayList<>();
+        for (int c = 0; c < numClasses; c++) {
+            final int classIndex = c;
+            final List<Candidate> ofClass = new ArrayList<>();
+            for (final Candidate candidate : candidates) {
+                if (candidate.classIndex == classIndex) {
+                    ofClass.add(candidate);
+                }
+            }
+            kept.addAll(greedyNonOverlap(ofClass));
+        }
+
+        kept.sort((a, b) -> Integer.compare(a.startWord, b.startWord));
+        return kept;
 
     }
 

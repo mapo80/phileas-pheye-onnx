@@ -15,7 +15,9 @@
  */
 package ai.philterd.phileas.pheye.onnx;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Tuning knobs for {@link LocalPhEyeDetector}.
@@ -51,9 +53,41 @@ public final class LocalPhEyeOptions {
     public static final String LONG_TEXT_MODE_ENV = "PHILEAS_PHEYE_ONNX_LONG_TEXT_MODE";
     public static final String CHUNK_OVERLAP_PROPERTY = "phileas.pheye.onnx.chunkOverlapWords";
     public static final String CHUNK_OVERLAP_ENV = "PHILEAS_PHEYE_ONNX_CHUNK_OVERLAP_WORDS";
+    public static final String DECODE_STRATEGY_PROPERTY = "phileas.pheye.onnx.decodeStrategy";
+    public static final String DECODE_STRATEGY_ENV = "PHILEAS_PHEYE_ONNX_DECODE_STRATEGY";
+    /** Prefix for a per-label threshold, e.g. {@code phileas.pheye.onnx.threshold.person=0.30}. */
+    public static final String LABEL_THRESHOLD_PREFIX = "phileas.pheye.onnx.threshold.";
 
     /** The upstream hardcoded value; kept as the default for backward compatibility. */
     public static final double DEFAULT_DETECTION_THRESHOLD = 0.5;
+
+    /**
+     * How overlapping candidate spans are reduced to a final set.
+     *
+     * <p>This matters more than it looks. GLiNER scores every (span, label) pair independently, so
+     * the same words routinely come back as both a strong ORGANIZATION and a slightly weaker PERSON.
+     */
+    public enum DecodeStrategy {
+
+        /**
+         * One greedy pass over all labels: the highest-scoring span wins and suppresses every
+         * overlapping span <i>including those of other labels</i>. This is upstream's behaviour and
+         * remains the default so parity is preserved.
+         *
+         * <p>Its failure mode is specific and bad for redaction: a wrong ORGANIZATION at 0.90 deletes
+         * a correct PERSON at 0.85 over the same words, and the name is then never masked.
+         */
+        FLAT_GREEDY,
+
+        /**
+         * Greedy per label, independently. Spans of different labels are allowed to overlap and are
+         * left for the caller's resolver to reconcile.
+         *
+         * <p>For a privacy filter this is the safer trade: two overlapping classifications cost a
+         * little precision, whereas a suppressed PERSON is a leak.
+         */
+        PER_LABEL_GREEDY
+    }
 
     /** What to do when the input has more words than the model can take. */
     public enum LongTextMode {
@@ -81,9 +115,22 @@ public final class LocalPhEyeOptions {
     private final double detectionThreshold;
     private final LongTextMode longTextMode;
     private final Integer chunkOverlapWords;
+    private final Map<String, Double> labelThresholds;
+    private final DecodeStrategy decodeStrategy;
 
     public LocalPhEyeOptions(final double detectionThreshold, final LongTextMode longTextMode,
                              final Integer chunkOverlapWords) {
+        this(detectionThreshold, longTextMode, chunkOverlapWords, Map.of(), DecodeStrategy.FLAT_GREEDY);
+    }
+
+    /**
+     * @param labelThresholds per-label decode thresholds, keyed by the label string exactly as it is
+     *                        passed to {@code detect}; matched case-insensitively. A label with no
+     *                        entry falls back to {@code detectionThreshold}.
+     */
+    public LocalPhEyeOptions(final double detectionThreshold, final LongTextMode longTextMode,
+                             final Integer chunkOverlapWords, final Map<String, Double> labelThresholds,
+                             final DecodeStrategy decodeStrategy) {
 
         if (detectionThreshold < 0.0 || detectionThreshold > 1.0 || Double.isNaN(detectionThreshold)) {
             throw new IllegalArgumentException("detectionThreshold must be within [0, 1]; got " + detectionThreshold);
@@ -92,14 +139,35 @@ public final class LocalPhEyeOptions {
             throw new IllegalArgumentException("chunkOverlapWords must not be negative; got " + chunkOverlapWords);
         }
 
+        final Map<String, Double> normalized = new LinkedHashMap<>();
+        if (labelThresholds != null) {
+            for (final Map.Entry<String, Double> entry : labelThresholds.entrySet()) {
+                final Double value = entry.getValue();
+                if (value == null || value < 0.0 || value > 1.0 || Double.isNaN(value)) {
+                    throw new IllegalArgumentException("Threshold for label '" + entry.getKey()
+                            + "' must be within [0, 1]; got " + value);
+                }
+                normalized.put(entry.getKey().toLowerCase(Locale.ROOT), value);
+            }
+        }
+
         this.detectionThreshold = detectionThreshold;
         this.longTextMode = longTextMode == null ? LongTextMode.CHUNK : longTextMode;
         this.chunkOverlapWords = chunkOverlapWords;
+        this.labelThresholds = Map.copyOf(normalized);
+        this.decodeStrategy = decodeStrategy == null ? DecodeStrategy.FLAT_GREEDY : decodeStrategy;
     }
 
     /** Upstream-equivalent defaults for the threshold, with safe long-input handling. */
     public static LocalPhEyeOptions defaults() {
         return new LocalPhEyeOptions(DEFAULT_DETECTION_THRESHOLD, LongTextMode.CHUNK, null);
+    }
+
+    /** Per-label thresholds and a decode strategy, with a fallback threshold for unlisted labels. */
+    public static LocalPhEyeOptions of(final double defaultThreshold, final Map<String, Double> labelThresholds,
+                                       final DecodeStrategy decodeStrategy) {
+        return new LocalPhEyeOptions(defaultThreshold, LongTextMode.CHUNK, null,
+                labelThresholds, decodeStrategy);
     }
 
     /** Defaults with a different decode threshold. */
@@ -141,7 +209,30 @@ public final class LocalPhEyeOptions {
             }
         }
 
-        return new LocalPhEyeOptions(threshold, mode, overlap);
+        final String strategyValue = value(DECODE_STRATEGY_PROPERTY, DECODE_STRATEGY_ENV);
+        final DecodeStrategy strategy;
+        if (strategyValue == null || strategyValue.isBlank()) {
+            strategy = DecodeStrategy.FLAT_GREEDY;
+        } else {
+            try {
+                strategy = DecodeStrategy.valueOf(strategyValue.trim().toUpperCase(Locale.ROOT));
+            } catch (final IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid " + DECODE_STRATEGY_PROPERTY + " '" + strategyValue
+                        + "'. Expected FLAT_GREEDY or PER_LABEL_GREEDY.", e);
+            }
+        }
+
+        // Per-label thresholds are discovered by prefix, because GLiNER labels are free text and
+        // cannot be enumerated in advance.
+        final Map<String, Double> perLabel = new LinkedHashMap<>();
+        for (final String name : System.getProperties().stringPropertyNames()) {
+            if (name.startsWith(LABEL_THRESHOLD_PREFIX) && name.length() > LABEL_THRESHOLD_PREFIX.length()) {
+                final String label = name.substring(LABEL_THRESHOLD_PREFIX.length());
+                perLabel.put(label, parseDouble(System.getProperty(name), threshold, name));
+            }
+        }
+
+        return new LocalPhEyeOptions(threshold, mode, overlap, perLabel, strategy);
 
     }
 
@@ -165,6 +256,20 @@ public final class LocalPhEyeOptions {
         return detectionThreshold;
     }
 
+    /** The threshold that applies to one label: its own if configured, otherwise the default. */
+    public double thresholdFor(final String label) {
+        final Double specific = labelThresholds.get(label.toLowerCase(Locale.ROOT));
+        return specific != null ? specific : detectionThreshold;
+    }
+
+    public Map<String, Double> labelThresholds() {
+        return labelThresholds;
+    }
+
+    public DecodeStrategy decodeStrategy() {
+        return decodeStrategy;
+    }
+
     public LongTextMode longTextMode() {
         return longTextMode;
     }
@@ -181,6 +286,8 @@ public final class LocalPhEyeOptions {
     @Override
     public String toString() {
         return "LocalPhEyeOptions[detectionThreshold=" + detectionThreshold
+                + ", labelThresholds=" + labelThresholds
+                + ", decodeStrategy=" + decodeStrategy
                 + ", longTextMode=" + longTextMode
                 + ", chunkOverlapWords=" + (chunkOverlapWords == null ? "auto" : chunkOverlapWords) + "]";
     }

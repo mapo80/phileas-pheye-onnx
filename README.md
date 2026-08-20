@@ -9,7 +9,8 @@ differ from upstream, each driven by that goal:
 |---|---|---|
 | Java | 25 bytecode | **Java 21** (class-file major 65, enforced in CI) |
 | Phileas | 4.1.0 | **4.2.0** |
-| ONNX decode threshold | hardcoded `0.5` | **configurable**, default `0.5` |
+| ONNX decode threshold | hardcoded `0.5` | **configurable, global and per-label**, default `0.5` |
+| Overlapping labels | one flat greedy pass; a stronger ORGANIZATION deletes a correct PERSON | **`PER_LABEL_GREEDY`** keeps both for the caller's resolver |
 | Input longer than `max_len` | silently truncated | **overlapping windows** (or fail-closed) |
 | Broken model directory | partly deferred | **fail-closed at construction** |
 
@@ -120,6 +121,49 @@ some score a correct Italian person span around 0.45, others around 0.99. Pick t
 model, on a validation set.
 
 An unparseable value is a startup error, never a silent fallback to the default.
+
+### Per-label thresholds
+
+GLiNER calibrates differently per label as well as per model, so each label can have its own floor,
+with the global value as the fallback:
+
+```bash
+-Dphileas.pheye.onnx.detectionThreshold=0.40   # fallback for any label not listed
+-Dphileas.pheye.onnx.threshold.person=0.20
+-Dphileas.pheye.onnx.threshold.address=0.35
+```
+
+Programmatically:
+
+```java
+var options = LocalPhEyeOptions.of(0.40,
+        Map.of("person", 0.20, "address", 0.35),
+        LocalPhEyeOptions.DecodeStrategy.PER_LABEL_GREEDY);
+var detector = new LocalPhEyeDetector(Path.of("/models/gliner"), options);
+```
+
+Label lookup is case-insensitive. Labels are free text, so per-label properties are discovered by
+prefix rather than from a fixed list.
+
+### Decode strategy: the cross-label suppression trap
+
+GLiNER scores every (span, label) pair independently, so the same words routinely come back as both a
+confident ORGANIZATION and a slightly less confident PERSON. Upstream runs **one** greedy pass across
+all labels, so the ORGANIZATION wins and the PERSON is deleted — and the name is then never masked.
+That is a leak, not a precision issue.
+
+| Strategy | Behaviour |
+|---|---|
+| `FLAT_GREEDY` (default) | upstream: highest span wins across all labels |
+| `PER_LABEL_GREEDY` | greedy within each label; different labels may overlap |
+
+```bash
+-Dphileas.pheye.onnx.decodeStrategy=PER_LABEL_GREEDY
+```
+
+`FLAT_GREEDY` remains the default so the parity guarantee with upstream holds. For redaction, prefer
+`PER_LABEL_GREEDY` and let your own resolver reconcile overlaps: two overlapping classifications cost
+a little precision, a suppressed PERSON costs a name.
 
 ## Long input
 
