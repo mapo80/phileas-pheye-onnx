@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.linksmt.consumer</groupId>
+    <artifactId>consumer-verification</artifactId>
+    <version>1.0.0</version>
+
+    <!--
+        A deliberately independent consumer, used to verify the PUBLISHED artifact rather than the
+        one this repository builds.
+
+        It is intentionally NOT a module of the parent pom: it must resolve
+        io.github.mapo80:phileas-pheye-onnx from GitHub Packages, and a reactor build would satisfy
+        the dependency from the sibling target/ directory instead, which would prove nothing.
+
+        The consumer-verify workflow runs it with an empty temporary -Dmaven.repo.local, so no
+        previously installed artifact can satisfy it either.
+    -->
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Overridden by the workflow to the version being verified. -->
+        <pheye.onnx.version>1.2.0</pheye.onnx.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/mapo80/phileas-pheye-onnx</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.mapo80</groupId>
+            <artifactId>phileas-pheye-onnx</artifactId>
+            <version>${pheye.onnx.version}</version>
+        </dependency>
+        <!-- phileas is 'provided' in the library, so a real consumer supplies it. -->
+        <dependency>
+            <groupId>ai.philterd</groupId>
+            <artifactId>phileas</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
