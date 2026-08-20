@@ -88,15 +88,19 @@ jobs:
       - name: Download a GLiNER model
         run: |
           set -euo pipefail
-          # universal_ner_ita INT8 is the smallest published GLiNER export that handles Italian
-          # (119 MB), which keeps this job quick while still exercising real inference.
+          # universal_ner_ita FP32 (472 MB) is the smallest published GLiNER export that handles
+          # Italian AND is well enough calibrated for the long-context assertion. The INT8 variant of
+          # the same model is half the download but fails it: with a low threshold on long,
+          # low-information filler it labels ordinary function words as entities, and those noise
+          # spans win the greedy decode and crowd out the real name. That is a property of the
+          # quantized weights, not of the windowing under test.
           repo="onnx-community/universal_ner_ita"
           dir="${RUNNER_TEMP}/model"
           mkdir -p "${dir}/onnx"
           for f in tokenizer.json gliner_config.json; do
             curl -fsSL "https://huggingface.co/${repo}/resolve/main/${f}" -o "${dir}/${f}"
           done
-          curl -fsSL "https://huggingface.co/${repo}/resolve/main/onnx/model_int8.onnx" \
+          curl -fsSL "https://huggingface.co/${repo}/resolve/main/onnx/model.onnx" \
             -o "${dir}/onnx/model.onnx"
           ls -lh "${dir}" "${dir}/onnx"
           echo "CONSUMER_MODEL_DIR=${dir}" >> "$GITHUB_ENV"
