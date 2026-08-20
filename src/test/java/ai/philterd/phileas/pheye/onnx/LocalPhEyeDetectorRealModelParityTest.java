@@ -31,12 +31,15 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * and asserts it reproduces the Python {@code gliner.predict_entities} reference exactly (same
  * character offsets and labels; scores within a small tolerance).
  *
- * <p>This is skipped unless the environment variable {@code PHILEAS_GLINER_MODEL_DIR} points at a
- * model directory containing {@code model.onnx}, {@code tokenizer.json}, and {@code gliner_config.json}
- * (the ONNX export of {@code philterd/ph-eye-pii-en-small}). The normal build does not ship that
- * model, so the test does not run by default; it is the gate that confirms numerical parity on real
- * weights once a model is available, complementing {@link LocalPhEyeDetectorParityTest} (which
- * verifies the pipeline mechanics against a synthetic graph).
+ * <p>This is skipped unless {@code PHILEAS_PHEYE_EN_SMALL_MODEL_DIR} points at an ONNX export of
+ * {@code philterd/ph-eye-pii-en-small} specifically. The expected spans below are that model's
+ * Python reference, so pointing the test at any other checkpoint produces a failure that says
+ * nothing about the code -- which is why it has its own variable rather than sharing the generic
+ * {@code PHILEAS_GLINER_MODEL_DIR} used by the other real-model tests.
+ *
+ * <p>It is the gate that confirms numerical parity on real weights once that model is available,
+ * complementing {@link LocalPhEyeDetectorParityTest} (which verifies the pipeline mechanics against
+ * a synthetic graph).
  *
  * <p>The expected spans below were produced by the Python reference for {@code ph-eye-pii-en-small}:
  * <pre>
@@ -61,9 +64,11 @@ class LocalPhEyeDetectorRealModelParityTest {
     @Test
     void matchesPythonReferenceOnRealWeights() throws Exception {
 
-        final String dirEnv = System.getenv("PHILEAS_GLINER_MODEL_DIR");
+        final String dirEnv = System.getenv("PHILEAS_PHEYE_EN_SMALL_MODEL_DIR");
         assumeTrue(dirEnv != null && !dirEnv.isBlank(),
-                "Set PHILEAS_GLINER_MODEL_DIR to a real exported GLiNER model dir to run real-weight parity.");
+                "Set PHILEAS_PHEYE_EN_SMALL_MODEL_DIR to an ONNX export of philterd/ph-eye-pii-en-small"
+                        + " to run real-weight parity. The reference spans below are specific to that"
+                        + " checkpoint, so another model would fail for reasons unrelated to the code.");
         final Path dir = Path.of(dirEnv);
         assumeTrue(Files.isDirectory(dir) && Files.exists(dir.resolve("gliner_config.json")),
                 "PHILEAS_GLINER_MODEL_DIR does not contain a GLiNER model; skipping.");
