@@ -456,6 +456,10 @@ public class LocalPhEyeDetector implements PhEyeDetector {
             return greedyNonOverlap(candidates);
         }
 
+        if (strategy == LocalPhEyeOptions.DecodeStrategy.CONTAINMENT_AWARE_GREEDY) {
+            return containmentAwareGreedy(candidates);
+        }
+
         final List<Candidate> kept = new ArrayList<>();
         for (int c = 0; c < numClasses; c++) {
             final int classIndex = c;
@@ -494,6 +498,59 @@ public class LocalPhEyeDetector implements PhEyeDetector {
         }
         kept.sort((a, b) -> Integer.compare(a.startWord, b.startWord));
         return kept;
+    }
+
+    /**
+     * Greedy, except that a strictly containing span of the same label displaces the span it
+     * contains instead of being discarded by it.
+     *
+     * <p>Same descending-score pass as {@link #greedyNonOverlap}: the difference is what happens when
+     * a candidate overlaps something already kept. Plain greedy always drops the candidate. Here, if
+     * the candidate contains a kept span of the same label, and overlaps <i>nothing else</i>, the two
+     * swap places. Requiring it to overlap nothing else is what keeps the pass deterministic and
+     * order-independent -- a candidate straddling two kept spans has no single span to replace, and
+     * promoting it would silently delete the second one.
+     *
+     * <p>Both spans are above the decode threshold by construction: candidates below it never reach
+     * this method.
+     */
+    static List<Candidate> containmentAwareGreedy(final List<Candidate> candidates) {
+
+        candidates.sort((a, b) -> Double.compare(b.score, a.score));
+        final List<Candidate> kept = new ArrayList<>();
+
+        for (final Candidate c : candidates) {
+
+            Candidate contained = null;
+            boolean blocked = false;
+
+            for (final Candidate k : kept) {
+                if (c.startWord > k.endWord || k.startWord > c.endWord) {
+                    continue;
+                }
+                final boolean strictlyContains = c.startWord <= k.startWord && k.endWord <= c.endWord
+                        && (c.startWord < k.startWord || k.endWord < c.endWord);
+                if (strictlyContains && c.classIndex == k.classIndex && contained == null) {
+                    contained = k;
+                } else {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            if (blocked) {
+                continue;
+            }
+            if (contained != null) {
+                kept.remove(contained);
+            }
+            kept.add(c);
+
+        }
+
+        kept.sort((a, b) -> Integer.compare(a.startWord, b.startWord));
+        return kept;
+
     }
 
     private static double sigmoid(final double x) {

@@ -86,7 +86,24 @@ public final class LocalPhEyeOptions {
          * <p>For a privacy filter this is the safer trade: two overlapping classifications cost a
          * little precision, whereas a suppressed PERSON is a leak.
          */
-        PER_LABEL_GREEDY
+        PER_LABEL_GREEDY,
+
+        /**
+         * Flat greedy, with one exception: a span that <b>strictly contains</b> an already-kept span
+         * of the <b>same label</b> is kept in its place, and the contained one is dropped.
+         *
+         * <p>The exception exists because plain greedy is highest-score-wins, and for masking that is
+         * the wrong tie-break in exactly one situation. When a model scores the head of a name higher
+         * than the whole name -- "Gianfilippo" at 0.969 against "Della Ratta Gianfilippo" at 0.953 --
+         * greedy keeps the short one, and the rest of the name is left readable. Preferring the
+         * container there can only mask more, never less.
+         *
+         * <p>It is deliberately <b>not</b> a general "widest wins": widest-wins across labels would
+         * let a spurious wide ORGANIZATION delete a correct narrow PERSON, and widest-wins for
+         * non-containing overlaps would resolve partial overlaps by length rather than by
+         * confidence. The rule fires only for same-label, strict containment, both above threshold.
+         */
+        CONTAINMENT_AWARE_GREEDY
     }
 
     /** What to do when the input has more words than the model can take. */
