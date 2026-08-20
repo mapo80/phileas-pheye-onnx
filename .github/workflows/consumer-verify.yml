@@ -31,6 +31,12 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Tags are needed to discover the latest published version. The default shallow,
+          # --no-tags checkout makes `git describe` find nothing, which previously let this job
+          # report success while verifying nothing at all.
+          fetch-depth: 0
+          fetch-tags: true
 
       - uses: actions/setup-java@v4
         with:
@@ -51,15 +57,15 @@ jobs:
             version="$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null | sed 's/^v//' || true)"
           fi
           if [ -z "${version}" ]; then
-            echo "No published version to verify yet; nothing to do." >&2
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
+            # Failing here is deliberate. A job that reports success without resolving anything is
+            # worse than a red build: it looks like the distribution was verified when it was not.
+            echo "::error::could not resolve a published version to verify (no v* tag found)"
+            exit 1
           fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "Verifying ${version}"
 
       - name: Wait for the package to be visible
-        if: steps.version.outputs.skip != 'true'
         run: |
           set -euo pipefail
           base="https://maven.pkg.github.com/mapo80/phileas-pheye-onnx/io/github/mapo80/phileas-pheye-onnx/${{ steps.version.outputs.version }}"
@@ -78,7 +84,6 @@ jobs:
           exit 1
 
       - name: Download a GLiNER model
-        if: steps.version.outputs.skip != 'true'
         run: |
           set -euo pipefail
           # universal_ner_ita INT8 is the smallest published GLiNER export that handles Italian
@@ -95,7 +100,6 @@ jobs:
           echo "CONSUMER_MODEL_DIR=${dir}" >> "$GITHUB_ENV"
 
       - name: Consume from GitHub Packages into an empty repository
-        if: steps.version.outputs.skip != 'true'
         working-directory: examples/consumer-verification
         run: |
           set -euo pipefail
