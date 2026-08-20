@@ -206,6 +206,23 @@ PHILEAS_GLINER_MODEL_DIR=/models/gliner mvn test   # also runs the real-model te
 Tests needing a model skip with a clear message when it is absent. CI runs `mvn clean verify` on
 Java 21 and fails if any produced class file is newer than major 65.
 
+## Verified distribution
+
+`v1.2.0` was built, tested, published and consumed end to end:
+
+| Step | Result |
+|---|---|
+| Java 21 CI (`build.yml`) | [run 32341662397](https://github.com/mapo80/phileas-pheye-onnx/actions/runs/32341662397) — success |
+| Release workflow (`release.yml`) | [run 32342520568](https://github.com/mapo80/phileas-pheye-onnx/actions/runs/32342520568) — success |
+| GitHub Packages | `mvn deploy` BUILD SUCCESS in the release run |
+| GitHub Release | [v1.2.0](https://github.com/mapo80/phileas-pheye-onnx/releases/tag/v1.2.0) — jar, sources, javadoc, all with `.sha256` |
+| Clean consumer | separate Java 21 project, empty temporary local repository, 8/8 tests green against the published jar |
+
+The consumer test checks what a third party actually cares about: the jar is Java 21 bytecode
+(class-file major 65), local ONNX inference works, a custom per-label threshold is honoured, input
+past `max_len` is still scanned with correct offsets, `FAIL` mode refuses over-long input, a broken
+model directory is refused, and inference completes with an unroutable HTTP proxy configured.
+
 ## License
 
 Apache 2.0, as upstream.
