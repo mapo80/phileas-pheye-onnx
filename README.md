@@ -214,9 +214,15 @@ Java 21 and fails if any produced class file is newer than major 65.
 |---|---|
 | Java 21 CI (`build.yml`) | [run 32341662397](https://github.com/mapo80/phileas-pheye-onnx/actions/runs/32341662397) — success |
 | Release workflow (`release.yml`) | [run 32342520568](https://github.com/mapo80/phileas-pheye-onnx/actions/runs/32342520568) — success |
-| GitHub Packages | `mvn deploy` BUILD SUCCESS in the release run |
+| GitHub Packages — publish | `mvn deploy` BUILD SUCCESS in the release run |
+| GitHub Packages — consume | [consumer-verify](https://github.com/mapo80/phileas-pheye-onnx/actions/workflows/consumer-verify.yml) resolves `1.2.0` from `maven.pkg.github.com` into an empty temporary repository, 8/8 tests green |
 | GitHub Release | [v1.2.0](https://github.com/mapo80/phileas-pheye-onnx/releases/tag/v1.2.0) — jar, sources, javadoc, all with `.sha256` |
-| Clean consumer | separate Java 21 project, empty temporary local repository, 8/8 tests green against the published jar |
+| Clean consumer | `examples/consumer-verification`: separate Java 21 project, not a Maven module of this one |
+
+Consumption is verified in CI rather than from a developer machine on purpose: `maven.pkg.github.com`
+requires the `read:packages` scope even for a public package, and GitHub exposes no API to mint a
+token, so it cannot be automated locally. A workflow does not need one — the built-in `GITHUB_TOKEN`
+already carries `packages: read`.
 
 The consumer test checks what a third party actually cares about: the jar is Java 21 bytecode
 (class-file major 65), local ONNX inference works, a custom per-label threshold is honoured, input
