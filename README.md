@@ -42,13 +42,15 @@ HTTP.
 
 ## Maven
 
-Published to GitHub Packages.
+Two channels carry the same artifacts. Prefer the first: it needs no credentials.
+
+### Without a token (recommended)
 
 ```xml
 <repositories>
   <repository>
-    <id>github</id>
-    <url>https://maven.pkg.github.com/mapo80/phileas-pheye-onnx</url>
+    <id>mapo80-maven</id>
+    <url>https://raw.githubusercontent.com/mapo80/phileas-pheye-onnx/maven-repo</url>
   </repository>
 </repositories>
 
@@ -59,8 +61,26 @@ Published to GitHub Packages.
 </dependency>
 ```
 
-GitHub Packages requires authentication even for public packages, so add a `github` server to your
-`~/.m2/settings.xml` with a personal access token that has `read:packages`:
+No `<server>` entry, no token, no `settings.xml`. The `maven-repo` branch holds a plain Maven
+repository layout, and `raw.githubusercontent.com` serves a public repository anonymously. The
+release workflow writes it on every tag and then verifies, with no `Authorization` header, that the
+new version really is anonymously readable.
+
+Suitable for internal use. For a wide public audience prefer Maven Central, which is CDN-backed and
+has no rate limits; that needs a Sonatype Central account and a GPG signing key.
+
+### GitHub Packages (needs a token)
+
+```xml
+<repository>
+  <id>github</id>
+  <url>https://maven.pkg.github.com/mapo80/phileas-pheye-onnx</url>
+</repository>
+```
+
+GitHub Packages requires authentication for Maven **even for a public package**, and exposes no
+setting to allow anonymous reads. A consumer therefore needs a `~/.m2/settings.xml` server entry
+with a token carrying `read:packages`:
 
 ```xml
 <servers>

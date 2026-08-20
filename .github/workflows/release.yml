@@ -69,6 +69,60 @@ jobs:
           MAVEN_USERNAME: ${{ github.actor }}
           MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
+      # A credential-free channel, in addition to GitHub Packages.
+      # GitHub Packages requires authentication for Maven even for a public package, and offers no
+      # setting to allow anonymous reads, so a consumer without a token cannot use it. The same
+      # artifacts are therefore also published as a plain Maven repository layout on the maven-repo
+      # branch, which raw.githubusercontent.com serves anonymously for a public repository.
+      - name: Publish to the credential-free Maven repository branch
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          stage="$(mktemp -d)"
+          mvn --batch-mode --no-transfer-progress -DskipTests \
+              deploy -DaltDeploymentRepository="local::file://${stage}"
+
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin maven-repo --depth=1 || true
+          worktree="$(mktemp -d)/maven-repo"
+          if git show-ref --verify --quiet refs/remotes/origin/maven-repo; then
+            git worktree add "${worktree}" origin/maven-repo
+            git -C "${worktree}" checkout -B maven-repo
+          else
+            git worktree add --detach "${worktree}"
+            git -C "${worktree}" checkout --orphan maven-repo
+            git -C "${worktree}" rm -rq --cached . 2>/dev/null || true
+            find "${worktree}" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          fi
+
+          # Merge, never replace: earlier versions must remain resolvable.
+          cp -R "${stage}/io" "${worktree}/"
+
+          git -C "${worktree}" add -A
+          if git -C "${worktree}" diff --cached --quiet; then
+            echo "nothing new to publish"
+          else
+            git -C "${worktree}" commit -m "Maven repository for anonymous consumption: ${version}"
+            git -C "${worktree}" push origin maven-repo
+          fi
+
+      - name: Verify anonymous resolution
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          base="https://raw.githubusercontent.com/mapo80/phileas-pheye-onnx/maven-repo/io/github/mapo80/phileas-pheye-onnx/${version}"
+          for f in "phileas-pheye-onnx-${version}.pom" "phileas-pheye-onnx-${version}.jar"; do
+            # No Authorization header on purpose: this step exists to prove no token is needed.
+            for attempt in 1 2 3 4 5 6; do
+              code=$(curl -sL -o /dev/null -w '%{http_code}' "${base}/${f}")
+              [ "${code}" = "200" ] && break
+              sleep 10
+            done
+            echo "${f}: HTTP ${code}"
+            [ "${code}" = "200" ] || { echo "::error::${f} is not anonymously readable"; exit 1; }
+          done
+
       - name: Checksums
         run: |
           cd target
