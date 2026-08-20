@@ -88,6 +88,7 @@
         <maven.source.version>3.4.0</maven.source.version>
         <maven.javadoc.version>3.12.0</maven.javadoc.version>
         <central.publishing.version>0.9.0</central.publishing.version>
+        <maven.gpg.version>3.2.7</maven.gpg.version>
     </properties>
 
     <build>
@@ -140,6 +141,36 @@
     </build>
 
     <profiles>
+
+        <!--
+            Maven Central publishing. In a profile so the ordinary build and the GitHub Packages
+            deploy are unaffected: activate with -Pcentral.
+
+            Central is the channel that needs no credentials on the CONSUMER side (it is anonymous
+            and CDN-backed, and mvnrepository.com indexes it automatically). It does need credentials
+            on the PUBLISHER side: a Sonatype Central Portal token and a GPG key. See README.
+        -->
+        <profile>
+            <id>central</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central.publishing.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <!-- Requires a human to press Publish in the Portal; set to
+                                 'automatic' once the first release has been validated. -->
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>sign</id>
             <activation>
@@ -152,6 +183,14 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.version}</version>
+                        <configuration>
+                            <!-- Non-interactive signing in CI: the passphrase arrives on stdin. -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

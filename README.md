@@ -66,8 +66,29 @@ repository layout, and `raw.githubusercontent.com` serves a public repository an
 release workflow writes it on every tag and then verifies, with no `Authorization` header, that the
 new version really is anonymously readable.
 
-Suitable for internal use. For a wide public audience prefer Maven Central, which is CDN-backed and
-has no rate limits; that needs a Sonatype Central account and a GPG signing key.
+Suitable for internal use. Note the trade-off: `raw.githubusercontent.com` is not an artifact host,
+so it has no CDN guarantees and is subject to GitHub's rate limits.
+
+### Maven Central (best, once configured)
+
+Central needs **nothing at all** from a consumer: no repository entry, no credentials, no
+`settings.xml` — it is a default repository for every Maven installation. It is CDN-backed, has no
+rate limits, and `mvnrepository.com` indexes it automatically (mvnrepository.com is a search index,
+not a place you publish to).
+
+`publish-central.yml` is ready and skips cleanly until four repository secrets exist:
+`CENTRAL_TOKEN_USERNAME`, `CENTRAL_TOKEN_PASSWORD`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`.
+
+Three one-time steps cannot be automated, because they need a human and a browser:
+
+1. create an account at [central.sonatype.com](https://central.sonatype.com);
+2. verify the `io.github.mapo80` namespace — the Portal issues a code and asks you to create a
+   public repository with that name under the `mapo80` account, which proves you own it;
+3. generate a GPG key, publish the public half to a keyserver, and store the private half in the
+   secrets above.
+
+The POM already satisfies every Central requirement (name, description, url, licenses, developers,
+scm, sources and javadoc jars), so after those three steps a tag is all it takes.
 
 ### GitHub Packages (needs a token)
 

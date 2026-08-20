@@ -1,0 +1,111 @@
+name: publish-central
+
+# Publishes to Maven Central (Sonatype Central Portal).
+#
+# Central is the channel that needs NO credentials on the consumer side: it is anonymous,
+# CDN-backed, has no rate limits, and mvnrepository.com indexes it automatically. It does need
+# credentials on the publisher side, which is why this is a separate, opt-in workflow.
+#
+# Required repository secrets (all four, or the job skips with an explanation):
+#   CENTRAL_TOKEN_USERNAME  Sonatype Central Portal user token, username half
+#   CENTRAL_TOKEN_PASSWORD  Sonatype Central Portal user token, password half
+#   GPG_PRIVATE_KEY         ASCII-armoured private key  (gpg --armor --export-secret-keys KEYID)
+#   GPG_PASSPHRASE          passphrase for that key
+#
+# One-time setup outside CI, none of which can be automated:
+#   1. Create a Central Portal account at https://central.sonatype.com
+#   2. Verify the io.github.mapo80 namespace: the Portal issues a code and asks you to create a
+#      public repository with that name under the mapo80 account, proving ownership
+#   3. Generate a GPG key, publish the PUBLIC half to keyserver.ubuntu.com, and store the private
+#      half in the secrets above
+on:
+  push:
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 1.2.0)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the publishing credentials are configured
+        id: creds
+        run: |
+          if [ -z "${{ secrets.CENTRAL_TOKEN_USERNAME }}" ] || [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Maven Central secrets are not configured; skipping." \
+                 "See the header of this workflow for the one-time setup."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.creds.outputs.configured == 'true'
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+      - name: Resolve the version
+        if: steps.creds.outputs.configured == 'true'
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set the version and build
+        if: steps.creds.outputs.configured == 'true'
+        run: |
+          mvn --batch-mode --no-transfer-progress \
+              versions:set -DnewVersion=${{ steps.version.outputs.version }} -DgenerateBackupPoms=false
+          mvn --batch-mode --no-transfer-progress clean verify
+
+      - name: Enforce Java 21 bytecode
+        if: steps.creds.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          while read -r class; do
+            major=$(javap -verbose -cp target/classes "${class}" | awk '/major version/ {print $3; exit}')
+            if [ "${major}" -gt 65 ]; then
+              echo "::error::${class} is class-file major ${major}; Java 21 supports at most 65"
+              exit 1
+            fi
+          done < <(find target/classes -name '*.class' | sed 's|target/classes/||; s|\.class$||; s|/|.|g')
+
+      - name: Publish to Maven Central
+        if: steps.creds.outputs.configured == 'true'
+        run: mvn --batch-mode --no-transfer-progress -DskipTests -Pcentral,sign -Dsign=true deploy
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Next step
+        if: steps.creds.outputs.configured == 'true'
+        run: |
+          cat <<'NOTE'
+          Uploaded and validated. autoPublish is false, so the deployment is waiting in
+          https://central.sonatype.com/publishing/deployments for a human to press Publish.
+
+          Once released it appears on Maven Central within ~15 minutes and on
+          mvnrepository.com/artifact/io.github.mapo80/phileas-pheye-onnx within a few hours.
+
+          Consumers then need no repository entry and no credentials at all: Central is a
+          default repository for every Maven installation.
+          NOTE
