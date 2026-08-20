@@ -1,0 +1,99 @@
+name: publish-azure
+
+# Publishes to the corporate Azure Artifacts feed 'linksmt'.
+#
+# That feed is already referenced by the platform poms
+# (https://pkgs.dev.azure.com/linksmt/_packaging/linksmt/maven/v1) and already authenticated by the
+# existing Azure pipeline, so a consumer inside the organisation needs no new repository entry at
+# all -- which makes it the natural home for a production dependency.
+#
+# Required secret:
+#   AZURE_ARTIFACTS_PAT   Azure DevOps PAT with Packaging (read & write) on the linksmt feed
+#
+# Unlike Maven Central, Azure Artifacts lets you unlist or delete a published version, so a mistake
+# here is recoverable.
+on:
+  push:
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 1.2.1)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the feed credential is configured
+        id: creds
+        run: |
+          if [ -z "${{ secrets.AZURE_ARTIFACTS_PAT }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::AZURE_ARTIFACTS_PAT is not set; skipping. Create a PAT with" \
+                 "Packaging (read & write) on the linksmt feed and add it as a repository secret."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.creds.outputs.configured == 'true'
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Resolve the version
+        if: steps.creds.outputs.configured == 'true'
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build, test and publish
+        if: steps.creds.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          # Azure Artifacts uses Basic auth with an empty username and the PAT as the password.
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<'XML'
+          <settings>
+            <servers>
+              <server>
+                <id>linksmt</id>
+                <username>linksmt</username>
+                <password>${env.AZURE_ARTIFACTS_PAT}</password>
+              </server>
+            </servers>
+          </settings>
+          XML
+
+          mvn --batch-mode --no-transfer-progress \
+              versions:set -DnewVersion=${{ steps.version.outputs.version }} -DgenerateBackupPoms=false
+          mvn --batch-mode --no-transfer-progress clean verify
+          mvn --batch-mode --no-transfer-progress -DskipTests -Pazure deploy
+        env:
+          AZURE_ARTIFACTS_PAT: ${{ secrets.AZURE_ARTIFACTS_PAT }}
+
+      - name: How to consume
+        if: steps.creds.outputs.configured == 'true'
+        run: |
+          cat <<'NOTE'
+          Published to the linksmt feed. Inside the organisation, consumers already authenticate to
+          it (MavenAuthenticate@0 in Azure Pipelines, or a settings.xml server entry locally), so
+          adding the dependency is all that is needed:
+
+            <dependency>
+              <groupId>io.github.mapo80</groupId>
+              <artifactId>phileas-pheye-onnx</artifactId>
+              <version>VERSION</version>
+            </dependency>
+          NOTE

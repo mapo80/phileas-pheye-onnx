@@ -171,6 +171,29 @@
             </build>
         </profile>
 
+        <!--
+            Azure Artifacts (feed 'linksmt'). This is where a production dependency for the banking
+            engine belongs: the feed is already referenced by the platform poms and already
+            authenticated by the existing Azure pipeline, so consumers need no new configuration.
+
+            Activate with -Pazure. Credentials come from a 'linksmt' server entry in settings.xml
+            (MavenAuthenticate@0 injects it inside Azure Pipelines; the publish-azure workflow
+            writes it from a secret when publishing from GitHub).
+        -->
+        <profile>
+            <id>azure</id>
+            <distributionManagement>
+                <repository>
+                    <id>linksmt</id>
+                    <url>https://pkgs.dev.azure.com/linksmt/_packaging/linksmt/maven/v1</url>
+                </repository>
+                <snapshotRepository>
+                    <id>linksmt</id>
+                    <url>https://pkgs.dev.azure.com/linksmt/_packaging/linksmt/maven/v1</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+
         <profile>
             <id>sign</id>
             <activation>
