@@ -73,7 +73,9 @@ jobs:
           # A release publishes the package moments before this job starts; give it a short grace
           # period rather than failing on a race.
           for attempt in 1 2 3 4 5 6; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' -u "x-access-token:${{ secrets.GITHUB_TOKEN }}" "${pom}")
+            # -L matters: GitHub Packages answers 302 with a redirect to a signed URL, so a probe
+            # that does not follow redirects reads a present package as absent.
+            code=$(curl -sL -o /dev/null -w '%{http_code}' -u "x-access-token:${{ secrets.GITHUB_TOKEN }}" "${pom}")
             echo "attempt ${attempt}: HTTP ${code}"
             if [ "${code}" = "200" ]; then
               exit 0
