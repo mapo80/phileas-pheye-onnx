@@ -44,7 +44,7 @@ HTTP.
 
 Two channels carry the same artifacts. Prefer the first: it needs no credentials.
 
-### Without a token (recommended)
+### Without a token — the channel this project uses
 
 ```xml
 <repositories>
@@ -66,10 +66,20 @@ repository layout, and `raw.githubusercontent.com` serves a public repository an
 release workflow writes it on every tag and then verifies, with no `Authorization` header, that the
 new version really is anonymously readable.
 
-Suitable for internal use. Note the trade-off: `raw.githubusercontent.com` is not an artifact host,
-so it has no CDN guarantees and is subject to GitHub's rate limits.
+The `maven-repo` branch is protected: force pushes and deletions are disabled, with `enforce_admins`
+on, so a published version is append-only and cannot be silently rewritten. That closes the one real
+supply-chain weakness of serving a Maven repository from a git branch.
 
-### Maven Central (best, once configured)
+Note the remaining trade-off: `raw.githubusercontent.com` is not an artifact host, so there is no CDN
+guarantee, no SLA, and no download audit, and a CI farm behind a single egress IP can hit GitHub's
+rate limits. For production, proxy this repository through an internal Nexus/Artifactory or the
+organisation's Azure Artifacts feed and let builds resolve from there.
+
+### Maven Central (configured, not enabled)
+
+Not currently used: the project is consumed internally, and Central versions can never be deleted,
+so tying the coordinates to an immutable public repository buys nothing here. The setup below is
+left in place should public distribution ever be wanted.
 
 Central needs **nothing at all** from a consumer: no repository entry, no credentials, no
 `settings.xml` — it is a default repository for every Maven installation. It is CDN-backed, has no
