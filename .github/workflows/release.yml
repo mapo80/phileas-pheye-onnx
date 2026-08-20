@@ -1,0 +1,88 @@
+name: release
+
+# Triggered by a vX.Y.Z tag. Builds on Java 21, publishes to GitHub Packages so the artifact can be
+# consumed as an ordinary Maven dependency, and creates a GitHub Release with the JARs plus SHA256
+# sums for direct download.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, without the leading v (e.g. 1.2.0)'
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+          # Wires a 'github' server into ~/.m2/settings.xml matching the pom's
+          # distributionManagement id, authenticated with the workflow token.
+          server-id: github
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Resolve the release version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            version="${{ github.event.inputs.version }}"
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Releasing ${version}"
+
+      - name: Set the POM version
+        run: mvn --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ steps.version.outputs.version }} -DgenerateBackupPoms=false
+
+      - name: Build, test and verify
+        run: mvn --batch-mode --no-transfer-progress clean verify
+
+      - name: Enforce Java 21 bytecode
+        run: |
+          set -euo pipefail
+          while read -r class; do
+            major=$(javap -verbose -cp target/classes "${class}" | awk '/major version/ {print $3; exit}')
+            if [ "${major}" -gt 65 ]; then
+              echo "::error::${class} is class-file major ${major}; Java 21 supports at most 65"
+              exit 1
+            fi
+          done < <(find target/classes -name '*.class' | sed 's|target/classes/||; s|\.class$||; s|/|.|g')
+          echo "All classes are Java 21 compatible."
+
+      - name: Publish to GitHub Packages
+        run: mvn --batch-mode --no-transfer-progress -DskipTests deploy
+        env:
+          MAVEN_USERNAME: ${{ github.actor }}
+          MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checksums
+        run: |
+          cd target
+          for jar in *.jar; do
+            sha256sum "${jar}" > "${jar}.sha256"
+          done
+          cat *.sha256
+
+      - name: Create the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', steps.version.outputs.version) }}
+          generate_release_notes: true
+          files: |
+            target/*.jar
+            target/*.jar.sha256
