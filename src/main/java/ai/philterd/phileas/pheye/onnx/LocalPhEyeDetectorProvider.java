@@ -22,9 +22,13 @@ import ai.philterd.phileas.services.filters.ai.pheye.PhEyeDetectorProvider;
 import java.nio.file.Path;
 
 /**
- * {@link PhEyeDetectorProvider} that builds a local ONNX Runtime GLiNER detector. Registered
+ * {@link PhEyeDetectorProvider} that builds a local ONNX Runtime detector. Registered
  * via {@code META-INF/services} so core phileas discovers it with {@link java.util.ServiceLoader}
  * when a {@code modelPath} is configured.
+ *
+ * <p>Which detector is built follows from the model directory's layout, not from configuration:
+ * see {@link LocalDetectorFactory}. A GLiNER model directory yields {@link LocalPhEyeDetector}, a
+ * BIO token-classification one yields {@link LocalTokenClassifierDetector}.
  *
  * <p>Tuning that core phileas cannot express -- the ONNX decode threshold and the long-input
  * policy -- is read from system properties or environment variables by
@@ -49,7 +53,7 @@ public class LocalPhEyeDetectorProvider implements PhEyeDetectorProvider {
         // Core phileas owns PhEyeConfiguration and it has no field for the decode threshold or the
         // long-input policy, so those are resolved from system properties / environment variables.
         // See LocalPhEyeOptions. Defaults reproduce upstream behaviour for the threshold.
-        return new LocalPhEyeDetector(Path.of(modelPath), LocalPhEyeOptions.fromEnvironment());
+        return LocalDetectorFactory.open(Path.of(modelPath), LocalPhEyeOptions.fromEnvironment());
 
     }
 

@@ -4,7 +4,7 @@ site_url: https://philterd.github.io/phileas-pheye-onnx/
 edit_uri: '?query=docs/docs/'
 copyright: Copyright 2026 Philterd, LLC
 site_author: philterd
-site_description: Local on-device GLiNER inference for the Phileas PhEye filter, via ONNX Runtime.
+site_description: Local on-device GLiNER and token-classification inference for the Phileas PhEye filter, via ONNX Runtime.
 theme:
   name: material
   locale: en
@@ -13,6 +13,7 @@ theme:
 nav:
   - Home: index.md
   - How It Works: how-it-works.md
+  - Token-Classification Models: token-classification.md
   - Model Directory: model-directory.md
   - Configuration: configuration.md
   - Limitations and Accuracy: limitations.md

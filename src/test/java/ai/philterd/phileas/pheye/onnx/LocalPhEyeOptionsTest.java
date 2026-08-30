@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.ClearSystemProperty;
 import org.junitpioneer.jupiter.SetSystemProperty;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,6 +83,35 @@ class LocalPhEyeOptionsTest {
         final IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, LocalPhEyeOptions::fromEnvironment);
         assertTrue(exception.getMessage().contains("CHUNK"));
+    }
+
+
+    @Test
+    @DisplayName("A blank threshold property is unset, not a deliberate 0.5")
+    void blankThresholdIsNotAnExplicitChoice() {
+
+        // parseDouble already treats blank as unset, so the value is the library default either way.
+        // What matters is the flag: marking it explicit would suppress a model directory's own
+        // calibrated threshold, which is the opposite of what an empty setting asks for.
+        final String previous = System.getProperty(LocalPhEyeOptions.THRESHOLD_PROPERTY);
+        try {
+            System.setProperty(LocalPhEyeOptions.THRESHOLD_PROPERTY, "   ");
+            final LocalPhEyeOptions options = LocalPhEyeOptions.fromEnvironment();
+            assertEquals(LocalPhEyeOptions.DEFAULT_DETECTION_THRESHOLD, options.detectionThreshold(), 1e-9);
+            assertFalse(options.thresholdExplicit());
+            assertEquals(0.92, options.withDefaultThreshold(0.92).detectionThreshold(), 1e-9);
+
+            System.setProperty(LocalPhEyeOptions.THRESHOLD_PROPERTY, "0.5");
+            final LocalPhEyeOptions chosen = LocalPhEyeOptions.fromEnvironment();
+            assertTrue(chosen.thresholdExplicit());
+            assertEquals(0.5, chosen.withDefaultThreshold(0.92).detectionThreshold(), 1e-9);
+        } finally {
+            if (previous == null) {
+                System.clearProperty(LocalPhEyeOptions.THRESHOLD_PROPERTY);
+            } else {
+                System.setProperty(LocalPhEyeOptions.THRESHOLD_PROPERTY, previous);
+            }
+        }
     }
 
 }

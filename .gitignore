@@ -7,3 +7,6 @@ target/
 # Local model artifacts used for testing (ONNX weights are large; do not commit).
 /models/
 *.onnx
+
+# Python bytecode from the scripts/ helpers.
+__pycache__/

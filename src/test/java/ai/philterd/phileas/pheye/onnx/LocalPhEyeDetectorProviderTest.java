@@ -21,10 +21,12 @@ import ai.philterd.phileas.services.filters.ai.pheye.PhEyeDetectorProvider;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -69,6 +71,28 @@ class LocalPhEyeDetectorProviderTest {
 
         try (final PhEyeDetector detector = new LocalPhEyeDetectorProvider().create(configuration)) {
             assertNotNull(detector);
+            assertTrue(detector instanceof LocalPhEyeDetector, detector.getClass().getName());
+        }
+    }
+
+    @Test
+    void buildsATokenClassifierWhenThatIsWhatTheDirectoryHolds() throws Exception {
+
+        // The SPI is the only entry point core phileas uses, so the dispatch has to work through it
+        // and not just through LocalDetectorFactory: a provider that always built the GLiNER
+        // detector would fail on the ONNX signature check at startup, on this model.
+        final String dir = System.getenv("PHILEAS_TOKEN_CLASSIFIER_MODEL_DIR");
+        assumeTrue(dir != null && !dir.isBlank(),
+                "Set PHILEAS_TOKEN_CLASSIFIER_MODEL_DIR to a token-classification model directory.");
+
+        final PhEyeConfiguration configuration = new PhEyeConfiguration("http://localhost:18080");
+        configuration.setModelPath(dir);
+
+        try (final PhEyeDetector detector = new LocalPhEyeDetectorProvider().create(configuration)) {
+            assertTrue(detector instanceof LocalTokenClassifierDetector, detector.getClass().getName());
+            final var spans = detector.detect("Il sig. Mario Rossi abita a Roma.", List.of("FULLNAME"), "", 0);
+            assertEquals(1, spans.size(), spans.toString());
+            assertEquals("Mario Rossi", spans.get(0).getText());
         }
     }
 

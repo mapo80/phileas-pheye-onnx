@@ -1,6 +1,8 @@
 # phileas-pheye-onnx
 
-`phileas-pheye-onnx` adds optional local, on-device GLiNER inference to the [Phileas](https://philterd.github.io/phileas/) PhEye filter, using ONNX Runtime. It lets Phileas run a GLiNER model in-process, with no separate PhEye server.
+`phileas-pheye-onnx` adds optional local, on-device inference to the [Phileas](https://philterd.github.io/phileas/) PhEye filter, using ONNX Runtime. It lets Phileas run a model in-process, with no separate PhEye server.
+
+Two model families are supported: zero-shot **GLiNER** span models, and fixed-taxonomy **BIO token classifiers**. The [model directory](model-directory.md)'s layout decides which is loaded; nothing else about using the module changes.
 
 Core Phileas talks to a [PhEye](https://www.philterd.ai/ph-eye/) service over HTTP. This module lets Phileas load and run the model itself instead. It is shipped as a separate artifact so that Phileas core stays lightweight: only applications that want local inference pull in the native ONNX Runtime and tokenizer dependencies.
 
@@ -9,7 +11,7 @@ Core Phileas talks to a [PhEye](https://www.philterd.ai/ph-eye/) service over HT
 Phileas supports two ways to run PhEye detection. Both produce the same kind of detections; they differ in where the model runs.
 
 - **Remote PhEye (default).** Phileas calls a PhEye HTTP service. Use this when you run PhEye as a shared service, want to scale model serving independently, or run the model on dedicated hardware (for example a GPU host) separate from the application.
-- **Local PhEye (this module).** Phileas loads a GLiNER model from a local directory and runs inference in-process. Use this when you want a single self-contained process, have no PhEye server to call, or need inference to stay entirely inside one application boundary with no network hop.
+- **Local PhEye (this module).** Phileas loads a model from a local directory and runs inference in-process. Use this when you want a single self-contained process, have no PhEye server to call, or need inference to stay entirely inside one application boundary with no network hop.
 
 You select local inference per filter by setting a `modelPath` (see [Configuration](configuration.md)). With no `modelPath`, Phileas uses the remote HTTP detector exactly as before, so adding this module changes nothing until you point a filter at a model directory.
 
@@ -36,6 +38,7 @@ Adding the artifact to the classpath is all that is needed to enable local infer
 ## Next steps
 
 - [How It Works](how-it-works.md): the SPI, service discovery, and the GLiNER pipeline this module reimplements.
+- [Token-Classification Models](token-classification.md): the second model family, and when to prefer it.
 - [Model Directory](model-directory.md): the files a local model directory must contain.
 - [Configuration](configuration.md): pointing a PhEye filter at a local model.
 - [Limitations and Accuracy](limitations.md): the current parity status, and what to confirm before production use.

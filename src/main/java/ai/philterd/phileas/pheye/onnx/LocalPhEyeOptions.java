@@ -43,6 +43,13 @@ import java.util.Map;
  * <h2>Long input</h2>
  * A GLiNER model has a hard word limit ({@code max_len} in {@code gliner_config.json}).
  * See {@link LongTextMode}.
+ *
+ * <h2>A window that is long in sub-tokens, not just in words</h2>
+ * {@code max_len} bounds a window in <i>words</i>. It does not bound the window in <i>sub-tokens</i>,
+ * and the two are not proportional: the entity prompt shares the sequence with the text, and text
+ * with an unusually high out-of-vocabulary rate (a long identifier, a base64 blob, a run of digits
+ * with no separators) can turn a modest word count into a very long sub-token sequence. See
+ * {@link #maxSequenceTokens()}.
  */
 public final class LocalPhEyeOptions {
 
@@ -55,11 +62,24 @@ public final class LocalPhEyeOptions {
     public static final String CHUNK_OVERLAP_ENV = "PHILEAS_PHEYE_ONNX_CHUNK_OVERLAP_WORDS";
     public static final String DECODE_STRATEGY_PROPERTY = "phileas.pheye.onnx.decodeStrategy";
     public static final String DECODE_STRATEGY_ENV = "PHILEAS_PHEYE_ONNX_DECODE_STRATEGY";
+    public static final String MAX_SEQUENCE_TOKENS_PROPERTY = "phileas.pheye.onnx.maxSequenceTokens";
+    public static final String MAX_SEQUENCE_TOKENS_ENV = "PHILEAS_PHEYE_ONNX_MAX_SEQUENCE_TOKENS";
     /** Prefix for a per-label threshold, e.g. {@code phileas.pheye.onnx.threshold.person=0.30}. */
     public static final String LABEL_THRESHOLD_PREFIX = "phileas.pheye.onnx.threshold.";
 
     /** The upstream hardcoded value; kept as the default for backward compatibility. */
     public static final double DEFAULT_DETECTION_THRESHOLD = 0.5;
+
+    /**
+     * Default ceiling on sub-tokens in one GLiNER window (prompt + text), chosen with margin below a
+     * failure this fork found on a real, currently supported encoder: entities lose their score
+     * gradually starting around 1,700 sub-tokens and the window's detections collapse to none by
+     * about 3,400, with no error at any point -- see {@code GlinerLongSequenceDegradationTest}. An
+     * ordinary window (max_len words of natural-language text, a realistic label list) sits far
+     * below this by construction: 384 words of Italian financial prose plus 22 labels measures under
+     * 1,000 sub-tokens. Only a pathological run of low-information text approaches it.
+     */
+    public static final int DEFAULT_MAX_SEQUENCE_TOKENS = 1024;
 
     /**
      * How overlapping candidate spans are reduced to a final set.
@@ -134,6 +154,17 @@ public final class LocalPhEyeOptions {
     private final Integer chunkOverlapWords;
     private final Map<String, Double> labelThresholds;
     private final DecodeStrategy decodeStrategy;
+    private final int maxSequenceTokens;
+
+    /**
+     * Whether {@code detectionThreshold} was chosen by the caller or is merely the library default.
+     *
+     * <p>The distinction cannot be recovered from the value: a caller asking for 0.5 and a caller
+     * asking for nothing produce the same number. It is recorded because a model directory may
+     * declare the threshold its weights were calibrated at, and that declaration should win over
+     * the library default while never overriding a caller. See {@link LocalDetectorFactory#open}.
+     */
+    private final boolean thresholdExplicit;
 
     public LocalPhEyeOptions(final double detectionThreshold, final LongTextMode longTextMode,
                              final Integer chunkOverlapWords) {
@@ -148,12 +179,30 @@ public final class LocalPhEyeOptions {
     public LocalPhEyeOptions(final double detectionThreshold, final LongTextMode longTextMode,
                              final Integer chunkOverlapWords, final Map<String, Double> labelThresholds,
                              final DecodeStrategy decodeStrategy) {
+        this(detectionThreshold, longTextMode, chunkOverlapWords, labelThresholds, decodeStrategy,
+                true, DEFAULT_MAX_SEQUENCE_TOKENS);
+    }
+
+    private LocalPhEyeOptions(final double detectionThreshold, final LongTextMode longTextMode,
+                              final Integer chunkOverlapWords, final Map<String, Double> labelThresholds,
+                              final DecodeStrategy decodeStrategy, final boolean thresholdExplicit) {
+        this(detectionThreshold, longTextMode, chunkOverlapWords, labelThresholds, decodeStrategy,
+                thresholdExplicit, DEFAULT_MAX_SEQUENCE_TOKENS);
+    }
+
+    private LocalPhEyeOptions(final double detectionThreshold, final LongTextMode longTextMode,
+                              final Integer chunkOverlapWords, final Map<String, Double> labelThresholds,
+                              final DecodeStrategy decodeStrategy, final boolean thresholdExplicit,
+                              final int maxSequenceTokens) {
 
         if (detectionThreshold < 0.0 || detectionThreshold > 1.0 || Double.isNaN(detectionThreshold)) {
             throw new IllegalArgumentException("detectionThreshold must be within [0, 1]; got " + detectionThreshold);
         }
         if (chunkOverlapWords != null && chunkOverlapWords < 0) {
             throw new IllegalArgumentException("chunkOverlapWords must not be negative; got " + chunkOverlapWords);
+        }
+        if (maxSequenceTokens <= 0) {
+            throw new IllegalArgumentException("maxSequenceTokens must be positive; got " + maxSequenceTokens);
         }
 
         final Map<String, Double> normalized = new LinkedHashMap<>();
@@ -173,11 +222,20 @@ public final class LocalPhEyeOptions {
         this.chunkOverlapWords = chunkOverlapWords;
         this.labelThresholds = Map.copyOf(normalized);
         this.decodeStrategy = decodeStrategy == null ? DecodeStrategy.FLAT_GREEDY : decodeStrategy;
+        this.thresholdExplicit = thresholdExplicit;
+        this.maxSequenceTokens = maxSequenceTokens;
     }
 
-    /** Upstream-equivalent defaults for the threshold, with safe long-input handling. */
+    /**
+     * Upstream-equivalent defaults for the threshold, with safe long-input handling.
+     *
+     * <p>The threshold here is the library default rather than a choice, so a model directory that
+     * declares its own calibrated value may replace it. Call {@link #withThreshold(double)} to state
+     * a threshold that must be honoured.
+     */
     public static LocalPhEyeOptions defaults() {
-        return new LocalPhEyeOptions(DEFAULT_DETECTION_THRESHOLD, LongTextMode.CHUNK, null);
+        return new LocalPhEyeOptions(DEFAULT_DETECTION_THRESHOLD, LongTextMode.CHUNK, null,
+                Map.of(), DecodeStrategy.FLAT_GREEDY, false, DEFAULT_MAX_SEQUENCE_TOKENS);
     }
 
     /** Per-label thresholds and a decode strategy, with a fallback threshold for unlisted labels. */
@@ -249,7 +307,24 @@ public final class LocalPhEyeOptions {
             }
         }
 
-        return new LocalPhEyeOptions(threshold, mode, overlap, perLabel, strategy);
+        final String maxSequenceTokensValue = value(MAX_SEQUENCE_TOKENS_PROPERTY, MAX_SEQUENCE_TOKENS_ENV);
+        int maxSequenceTokens = DEFAULT_MAX_SEQUENCE_TOKENS;
+        if (maxSequenceTokensValue != null && !maxSequenceTokensValue.isBlank()) {
+            try {
+                maxSequenceTokens = Integer.parseInt(maxSequenceTokensValue.trim());
+            } catch (final NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid " + MAX_SEQUENCE_TOKENS_PROPERTY + " '"
+                        + maxSequenceTokensValue + "'. Expected a positive integer number of sub-tokens.", e);
+            }
+        }
+
+        // Blank counts as unset, exactly as parseDouble treats it. Otherwise `-Dphileas...
+        // detectionThreshold=` would mark the library default as a deliberate choice, and so
+        // suppress the model directory's calibrated value -- the opposite of what an empty setting
+        // asks for.
+        final String rawThreshold = value(THRESHOLD_PROPERTY, THRESHOLD_ENV);
+        return new LocalPhEyeOptions(threshold, mode, overlap, perLabel, strategy,
+                rawThreshold != null && !rawThreshold.isBlank(), maxSequenceTokens);
 
     }
 
@@ -271,6 +346,34 @@ public final class LocalPhEyeOptions {
 
     public double detectionThreshold() {
         return detectionThreshold;
+    }
+
+    /**
+     * Whether the threshold was stated by the caller (or by the property/environment variable)
+     * rather than being the library default.
+     */
+    public boolean thresholdExplicit() {
+        return thresholdExplicit;
+    }
+
+    /**
+     * A copy using {@code threshold} in place of the library default, or {@code this} when the
+     * threshold was stated explicitly. Once applied, the threshold counts as chosen.
+     */
+    public LocalPhEyeOptions withDefaultThreshold(final double threshold) {
+        return thresholdExplicit
+                ? this
+                : new LocalPhEyeOptions(threshold, longTextMode, chunkOverlapWords, labelThresholds,
+                        decodeStrategy, true, maxSequenceTokens);
+    }
+
+    /**
+     * A copy with a different ceiling on sub-tokens in one GLiNER window. See
+     * {@link #maxSequenceTokens()} for what this bounds and why the default is what it is.
+     */
+    public LocalPhEyeOptions withMaxSequenceTokens(final int maxSequenceTokens) {
+        return new LocalPhEyeOptions(detectionThreshold, longTextMode, chunkOverlapWords, labelThresholds,
+                decodeStrategy, thresholdExplicit, maxSequenceTokens);
     }
 
     /** The threshold that applies to one label: its own if configured, otherwise the default. */
@@ -300,13 +403,35 @@ public final class LocalPhEyeOptions {
         return chunkOverlapWords;
     }
 
+    /**
+     * Ceiling on sub-tokens (prompt + text) in one GLiNER window, {@link #DEFAULT_MAX_SEQUENCE_TOKENS}
+     * unless overridden. A window that tokenizes past this is bisected on word boundaries and each
+     * half scored independently, recursively, until every window is within budget or cannot be
+     * bisected further (a single word alone over the limit is scored as-is; it is then isolated to
+     * its own window rather than dragging down real content around it).
+     *
+     * <p>This is not about what ONNX Runtime will accept -- see
+     * {@link LocalPhEyeDetector#rejectionMessage} for why no fixed graph capacity is assumed. It is
+     * about what the encoder was actually exercised at: a window far outside that range can return
+     * degraded or empty results with no error at all, which is worse than a rejection because
+     * nothing downstream can tell the difference from a clean document. Only pathological,
+     * low-information text (not ordinary long documents, which this option's default comfortably
+     * covers) approaches this ceiling. Not read on the token-classification path, which bounds
+     * sub-tokens per window through the model directory's own declared {@code max_tokens} instead.
+     */
+    public int maxSequenceTokens() {
+        return maxSequenceTokens;
+    }
+
     @Override
     public String toString() {
         return "LocalPhEyeOptions[detectionThreshold=" + detectionThreshold
+                + (thresholdExplicit ? "" : " (library default)")
                 + ", labelThresholds=" + labelThresholds
                 + ", decodeStrategy=" + decodeStrategy
                 + ", longTextMode=" + longTextMode
-                + ", chunkOverlapWords=" + (chunkOverlapWords == null ? "auto" : chunkOverlapWords) + "]";
+                + ", chunkOverlapWords=" + (chunkOverlapWords == null ? "auto" : chunkOverlapWords)
+                + ", maxSequenceTokens=" + maxSequenceTokens + "]";
     }
 
 }

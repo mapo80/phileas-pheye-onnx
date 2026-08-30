@@ -27,7 +27,8 @@
 
     <name>phileas-pheye-onnx</name>
     <url>https://www.philterd.ai</url>
-    <description>Optional local (on-device) GLiNER inference for the Phileas PhEye filter, via ONNX Runtime.
+    <description>Optional local (on-device) inference for the Phileas PhEye filter, via ONNX Runtime.
+        Drives GLiNER span models and BIO token-classification models.
     </description>
     <inceptionYear>2026</inceptionYear>
 

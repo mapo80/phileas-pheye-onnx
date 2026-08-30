@@ -20,6 +20,7 @@ import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OnnxValue;
 import ai.onnxruntime.OrtEnvironment;
+import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import ai.philterd.phileas.services.filters.ai.pheye.PhEyeDetector;
 import ai.philterd.phileas.services.filters.ai.pheye.PhEyeSpan;
@@ -135,16 +136,42 @@ public class LocalPhEyeDetector implements PhEyeDetector {
         this.chunkOverlapWords = Math.min(Math.max(requestedOverlap, minimumOverlap), Math.max(maximumOverlap, 0));
 
         requireReadable(modelDir.resolve("tokenizer.json"), "tokenizer.json");
-        this.tokenizer = HuggingFaceTokenizer.newInstance(modelDir.resolve("tokenizer.json"));
 
         final Path onnx = resolveOnnxPath(modelDir);
         requireReadable(onnx, "the ONNX model");
 
-        this.ortEnvironment = OrtEnvironment.getEnvironment();
-        this.session = ortEnvironment.createSession(onnx.toString(), new OrtSession.SessionOptions());
+        // This constructor is meant to throw -- that is the fail-closed contract -- so everything
+        // native it has opened has to be released on the way out. Both handles are off-heap and the
+        // garbage collector will not reclaim them.
+        HuggingFaceTokenizer openedTokenizer = null;
+        OrtSession openedSession = null;
+        try {
+            openedTokenizer = Tokenizers.load(modelDir.resolve("tokenizer.json"));
+            this.ortEnvironment = OrtEnvironment.getEnvironment();
+            try (final OrtSession.SessionOptions sessionOptions = new OrtSession.SessionOptions()) {
+                openedSession = ortEnvironment.createSession(onnx.toString(), sessionOptions);
+            }
+            this.tokenizer = openedTokenizer;
+            this.session = openedSession;
+            validateSignature(onnx);
+        } catch (final Throwable failure) {
+            closeQuietly(openedSession, failure);
+            closeQuietly(openedTokenizer, failure);
+            throw failure;
+        }
 
-        validateSignature(onnx);
+    }
 
+    private static void closeQuietly(final AutoCloseable closeable, final Throwable failure) {
+        if (closeable == null) {
+            return;
+        }
+        try {
+            closeable.close();
+        } catch (final Exception e) {
+            // The construction failure is what the caller needs to see; losing it would hide the cause.
+            failure.addSuppressed(e);
+        }
     }
 
     private static void requireReadable(final Path path, final String what) {
@@ -254,8 +281,10 @@ public class LocalPhEyeDetector implements PhEyeDetector {
 
     /**
      * Pure windowing logic, package-private and static so it can be unit-tested without loading a
-     * model. Guarantees, verified in {@code LongInputWindowingTest}: every word index appears in at
-     * least one window, and consecutive windows share {@code overlapWords} words.
+     * model, and shared with {@link LocalTokenClassifierDetector} -- the unit of windowing differs
+     * between the two families (GLiNER words against whitespace runs) but the policy does not.
+     * Guarantees, verified in {@code LongInputWindowingTest}: every word index appears in at least
+     * one window, and consecutive windows share {@code overlapWords} words.
      */
     static List<int[]> planWindows(final int totalWords, final int maxLen, final int overlapWords,
                                    final LocalPhEyeOptions.LongTextMode mode) {
@@ -270,7 +299,7 @@ public class LocalPhEyeDetector implements PhEyeDetector {
         switch (mode) {
 
             case FAIL -> throw new IllegalArgumentException("Input has " + totalWords + " words, more than the"
-                    + " model's max_len of " + maxLen + ", and longTextMode is FAIL. Chunk the input"
+                    + " model's window of " + maxLen + " words, and longTextMode is FAIL. Chunk the input"
                     + " upstream or switch to CHUNK mode; examining only part of the text would leave the"
                     + " remainder unredacted.");
 
@@ -320,9 +349,57 @@ public class LocalPhEyeDetector implements PhEyeDetector {
         // Tokenize pre-split (is_split_into_words=True). The tokenizer adds special tokens.
         final Encoding encoding = tokenizer.encode(inputWords.toArray(new String[0]));
         final long[] inputIds = encoding.getIds();
+        final int seqLen = inputIds.length;
+
+        // A window this long in sub-tokens is not one the encoder was exercised at, even though it
+        // is well within max_len words: the entity prompt shares the sequence with the text, and
+        // text with an unusually high out-of-vocabulary rate inflates sub-token count far out of
+        // proportion to word count. On a real, currently supported encoder this fork measured
+        // detections degrading from about 1,700 sub-tokens and collapsing to none by about 3,400 --
+        // with no error at any point, which for a redaction component is worse than a crash, because
+        // nothing downstream can tell a degraded window from a clean document. Bisecting on word
+        // boundaries keeps every window inside the range the model was actually exercised at,
+        // without ever leaving a word unscored. See LocalPhEyeOptions#maxSequenceTokens.
+        if (seqLen > options.maxSequenceTokens() && numWords > 1) {
+
+            // Plain bisection, no overlap: [from, mid) and [mid, to) partition the range exactly,
+            // with no word scored by both halves. That is what keeps this safe. An earlier version
+            // extended each half by the top-level chunkOverlapWords, sized for max_len-wide windows;
+            // reused here on a range this recursion may have already narrowed far below that, the
+            // extension routinely covered the ENTIRE original range on both sides, so both children
+            // were the same window as the parent and the recursion never made progress -- confirmed
+            // by an actual hang against real weights, not a theoretical concern. A true partition
+            // instead guarantees numWords strictly halves at every level: O(log numWords) deep,
+            // O(numWords) total words scored across the whole tree, however pathological the input.
+            //
+            // The cost: an entity wide enough to straddle a bisection point placed this deep,
+            // immediately adjacent to whatever pathological content triggered this path, can be cut
+            // across the boundary and missed. That narrow, specific gap is what buys safety against
+            // the failure this path exists to prevent: every detection in the window silently
+            // missing, or the process crashing, confirmed on the same real weights.
+            final int mid = from + numWords / 2;
+            collectCandidates(allWords, from, mid, labelList, out);
+            collectCandidates(allWords, mid, to, labelList, out);
+            return;
+
+        }
+
+        // Bisection only shrinks sub-token count by shrinking word count, so a *single* word whose
+        // own encoding already exceeds the ceiling reaches here unchanged: numWords == 1 and nothing
+        // above could have split it further. No legitimate PII value -- a name, an IBAN, a tax code
+        // -- is remotely this long, so this is pathological content in its own right (an embedded
+        // identifier, a base64 blob), and running the encoder over it risks exactly the cost the
+        // ceiling exists to bound: a transformer's attention is quadratic in sequence length, so
+        // this alone can exhaust memory regardless of how small the rest of the window is. It is
+        // skipped rather than scored. Everything else in the original window has already been
+        // isolated into its own windows by the bisection above, so skipping this one costs nothing
+        // beyond whatever might be inside this single pathological word.
+        if (seqLen > options.maxSequenceTokens()) {
+            return;
+        }
+
         final long[] attentionMask = encoding.getAttentionMask();
         final long[] wordIds = encoding.getWordIds(); // word index per token; -1 for special tokens
-        final int seqLen = inputIds.length;
 
         // words_mask: first subtoken of each TEXT word gets its 1-based text-word index, else 0
         // (mirrors prepare_word_mask with skip_first_words=promptWordCount).
@@ -336,6 +413,27 @@ public class LocalPhEyeDetector implements PhEyeDetector {
                 wordsMask[t] = 0;
             }
             previousWordId = wid;
+        }
+
+        // Every text word must have reached the encoding. A word with no mark has no representation
+        // to score, so a span over it is never emitted -- indistinguishable downstream from a window
+        // that genuinely contained nothing.
+        //
+        // Counted, not maxed: taking the highest mark would only notice a missing *last* word, and a
+        // word dropped in the middle would leave the count short while the maximum still looked
+        // right. The marks are one per text word by construction, so counting them is exact.
+        int markedWords = 0;
+        for (final long mark : wordsMask) {
+            if (mark != 0) {
+                markedWords++;
+            }
+        }
+        if (markedWords != numWords) {
+            throw new IllegalStateException("Only " + markedWords + " of this window's " + numWords
+                    + " words survived tokenization (" + seqLen + " sub-tokens for " + inputWords.size()
+                    + " prompt+text words). The window would be scored with words missing. Reduce"
+                    + " max_len in gliner_config.json, or shorten the label list: the entity prompt is"
+                    + " part of the same sequence as the text.");
         }
 
         // Enumerate candidate spans [i, i+width] for width in 0..maxWidth-1; mask out-of-range.
@@ -401,7 +499,7 @@ public class LocalPhEyeDetector implements PhEyeDetector {
             inputs.put("span_idx", OnnxTensor.createTensor(ortEnvironment, new long[][][]{spanIdx}));
             inputs.put("span_mask", OnnxTensor.createTensor(ortEnvironment, new boolean[][]{spanMask}));
 
-            try (final OrtSession.Result result = session.run(inputs)) {
+            try (final OrtSession.Result result = runSession(inputIds.length, inputs)) {
 
                 final OnnxValue value = result.get(REQUIRED_OUTPUT).orElseThrow(
                         () -> new IllegalStateException("ONNX model did not return a 'logits' output."));
@@ -553,6 +651,41 @@ public class LocalPhEyeDetector implements PhEyeDetector {
 
     }
 
+    /**
+     * {@code session.run}, with the encoder's own rejection turned into an actionable message.
+     *
+     * <p>There is no reliable, architecture-independent way to know a GLiNER encoder's real capacity
+     * up front: {@code gliner_config.json} declares {@code max_len} in <i>words</i>, not sub-tokens,
+     * and the prompt (one {@code <<ENT>> label} pair per requested label) shares the same sequence as
+     * the text, so the same {@code max_len} produces a different sub-token count depending on how
+     * many labels are requested. An encoder with absolute position embeddings rejects a sequence
+     * past its table size; one with relative position buckets (this module's reference model,
+     * mdeberta-v3-base, among them) does not reject long input at all -- confirmed by running 384
+     * words with 60 labels through it without error -- so a fixed cap declared here would be wrong
+     * for at least one real, currently supported model family, in one direction or the other.
+     *
+     * <p>What is universal is that a rejection, when the encoder does have a hard limit, arrives as
+     * an opaque {@link OrtException} with no mention of words, labels, or windows. Adding that context
+     * here, rather than declaring a cap this module cannot verify, is the fix that does not trade one
+     * false confidence for another.
+     */
+    private OrtSession.Result runSession(final int seqLen, final Map<String, OnnxTensor> inputs) throws Exception {
+        try {
+            return session.run(inputs);
+        } catch (final OrtException e) {
+            throw rejectionMessage(seqLen, e);
+        }
+    }
+
+    /** Package-private and static so the wording is unit-testable without a model. */
+    static IllegalStateException rejectionMessage(final int seqLen, final OrtException cause) {
+        return new IllegalStateException("ONNX Runtime rejected a window of " + seqLen + " sub-tokens"
+                + " (prompt + text). This is usually the entity prompt and the text together exceeding"
+                + " the encoder's real capacity, which gliner_config.json's max_len does not account for"
+                + " since it counts words, not sub-tokens shared with the label prompt. Reduce the label"
+                + " list, or the effective window (max_len / chunkOverlapWords), and retry.", cause);
+    }
+
     private static double sigmoid(final double x) {
         return 1.0 / (1.0 + Math.exp(-x));
     }
@@ -574,11 +707,16 @@ public class LocalPhEyeDetector implements PhEyeDetector {
 
     @Override
     public void close() throws Exception {
-        if (session != null) {
-            session.close();
-        }
-        if (tokenizer != null) {
-            tokenizer.close();
+        // Both handles are native. Closing the second only if the first succeeds would leak it
+        // exactly when something has already gone wrong.
+        try {
+            if (session != null) {
+                session.close();
+            }
+        } finally {
+            if (tokenizer != null) {
+                tokenizer.close();
+            }
         }
     }
 

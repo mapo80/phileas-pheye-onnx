@@ -1,0 +1,3485 @@
+{
+  "_note": "Reference output of the Python pipeline. Regenerate with scripts/generate_token_classification_fixture.py.",
+  "model": "rizzo-pii-student-6x384g-v1.2.0",
+  "window": {
+    "max_words": 120,
+    "overlap_words": 20
+  },
+  "thresholds": [
+    "0",
+    "0.92"
+  ],
+  "documents": [
+    {
+      "id": "short-mixed",
+      "text": "Il giorno 12/06/1985 il sig. Mario Rossi, nato a Milano, residente in Via Garibaldi 24, 00185 Roma (RM), codice fiscale RSSMRA85H12F205Z, ha versato euro 12.500,00 sul conto IT60X0542811101000000123456 presso Edilnord S.r.l., telefono +39 333 1234567, email m.rossi@studio.it.",
+      "words": 37,
+      "windows": 1,
+      "raw": [
+        {
+          "label": "DATE",
+          "start": 9,
+          "end": 20,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 28,
+          "end": 40,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 48,
+          "end": 55,
+          "score": 1.0
+        },
+        {
+          "label": "STREET",
+          "start": 69,
+          "end": 83,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 83,
+          "end": 86,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 87,
+          "end": 93,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 93,
+          "end": 98,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 100,
+          "end": 102,
+          "score": 0.999234
+        },
+        {
+          "label": "CF",
+          "start": 119,
+          "end": 136,
+          "score": 1.0
+        },
+        {
+          "label": "AMOUNT",
+          "start": 148,
+          "end": 163,
+          "score": 0.999988
+        },
+        {
+          "label": "IBAN",
+          "start": 173,
+          "end": 201,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 208,
+          "end": 223,
+          "score": 0.999998
+        },
+        {
+          "label": "TELEPHONENUM",
+          "start": 234,
+          "end": 250,
+          "score": 1.0
+        },
+        {
+          "label": "EMAIL",
+          "start": 257,
+          "end": 275,
+          "score": 1.0
+        }
+      ],
+      "by_threshold": {
+        "0": [
+          {
+            "label": "DATE",
+            "start": 10,
+            "end": 20,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 29,
+            "end": 40,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 49,
+            "end": 55,
+            "score": 1.0
+          },
+          {
+            "label": "STREET",
+            "start": 70,
+            "end": 83,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 84,
+            "end": 86,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 88,
+            "end": 93,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 94,
+            "end": 98,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 100,
+            "end": 102,
+            "score": 0.999234
+          },
+          {
+            "label": "CF",
+            "start": 120,
+            "end": 136,
+            "score": 1.0
+          },
+          {
+            "label": "AMOUNT",
+            "start": 149,
+            "end": 163,
+            "score": 0.999988
+          },
+          {
+            "label": "IBAN",
+            "start": 174,
+            "end": 201,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 209,
+            "end": 223,
+            "score": 0.999998
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 235,
+            "end": 250,
+            "score": 1.0
+          },
+          {
+            "label": "EMAIL",
+            "start": 258,
+            "end": 275,
+            "score": 1.0
+          }
+        ],
+        "0.92": [
+          {
+            "label": "DATE",
+            "start": 10,
+            "end": 20,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 29,
+            "end": 40,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 49,
+            "end": 55,
+            "score": 1.0
+          },
+          {
+            "label": "STREET",
+            "start": 70,
+            "end": 83,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 84,
+            "end": 86,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 88,
+            "end": 93,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 94,
+            "end": 98,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 100,
+            "end": 102,
+            "score": 0.999234
+          },
+          {
+            "label": "CF",
+            "start": 120,
+            "end": 136,
+            "score": 1.0
+          },
+          {
+            "label": "AMOUNT",
+            "start": 149,
+            "end": 163,
+            "score": 0.999988
+          },
+          {
+            "label": "IBAN",
+            "start": 174,
+            "end": 201,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 209,
+            "end": 223,
+            "score": 0.999998
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 235,
+            "end": 250,
+            "score": 1.0
+          },
+          {
+            "label": "EMAIL",
+            "start": 258,
+            "end": 275,
+            "score": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "accents-and-newlines",
+      "text": "L'avvocato Niccolo' D'Angio', con studio in Piazza Sant'Ambrogio 3, 20123 Milano (MI), ha depositato il ricorso n. 1234/2024 per conto della societa' Fratelli Bevilacqua & C. S.p.A., partita IVA 12345678903.\nRecapito: niccolo.dangio@pec.avvocatimilano.it\tTel. 02 8765432.",
+      "words": 35,
+      "windows": 1,
+      "raw": [
+        {
+          "label": "FULLNAME",
+          "start": 10,
+          "end": 27,
+          "score": 0.995911
+        },
+        {
+          "label": "STREET",
+          "start": 43,
+          "end": 64,
+          "score": 0.999991
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 64,
+          "end": 66,
+          "score": 0.999997
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 67,
+          "end": 73,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 73,
+          "end": 80,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 82,
+          "end": 84,
+          "score": 0.999606
+        },
+        {
+          "label": "DOCID",
+          "start": 114,
+          "end": 124,
+          "score": 0.999999
+        },
+        {
+          "label": "ORG",
+          "start": 149,
+          "end": 180,
+          "score": 0.999868
+        },
+        {
+          "label": "PIVA",
+          "start": 194,
+          "end": 206,
+          "score": 1.0
+        },
+        {
+          "label": "EMAIL",
+          "start": 217,
+          "end": 254,
+          "score": 0.999998
+        },
+        {
+          "label": "TELEPHONENUM",
+          "start": 259,
+          "end": 270,
+          "score": 1.0
+        }
+      ],
+      "by_threshold": {
+        "0": [
+          {
+            "label": "FULLNAME",
+            "start": 11,
+            "end": 27,
+            "score": 0.995911
+          },
+          {
+            "label": "STREET",
+            "start": 44,
+            "end": 64,
+            "score": 0.999991
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 65,
+            "end": 66,
+            "score": 0.999997
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 68,
+            "end": 73,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 74,
+            "end": 80,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 82,
+            "end": 84,
+            "score": 0.999606
+          },
+          {
+            "label": "DOCID",
+            "start": 115,
+            "end": 124,
+            "score": 0.999999
+          },
+          {
+            "label": "ORG",
+            "start": 150,
+            "end": 180,
+            "score": 0.999868
+          },
+          {
+            "label": "PIVA",
+            "start": 195,
+            "end": 206,
+            "score": 1.0
+          },
+          {
+            "label": "EMAIL",
+            "start": 218,
+            "end": 254,
+            "score": 0.999998
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 260,
+            "end": 270,
+            "score": 1.0
+          }
+        ],
+        "0.92": [
+          {
+            "label": "FULLNAME",
+            "start": 11,
+            "end": 27,
+            "score": 0.995911
+          },
+          {
+            "label": "STREET",
+            "start": 44,
+            "end": 64,
+            "score": 0.999991
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 65,
+            "end": 66,
+            "score": 0.999997
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 68,
+            "end": 73,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 74,
+            "end": 80,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 82,
+            "end": 84,
+            "score": 0.999606
+          },
+          {
+            "label": "DOCID",
+            "start": 115,
+            "end": 124,
+            "score": 0.999999
+          },
+          {
+            "label": "ORG",
+            "start": 150,
+            "end": 180,
+            "score": 0.999868
+          },
+          {
+            "label": "PIVA",
+            "start": 195,
+            "end": 206,
+            "score": 1.0
+          },
+          {
+            "label": "EMAIL",
+            "start": 218,
+            "end": 254,
+            "score": 0.999998
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 260,
+            "end": 270,
+            "score": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-pii",
+      "text": "La riunione si e' svolta secondo l'ordine del giorno previsto. Sono stati discussi i punti relativi all'andamento generale e alle procedure interne, senza rilievi particolari. Il documento e' stato approvato all'unanimita' dai presenti.",
+      "words": 33,
+      "windows": 1,
+      "raw": [],
+      "by_threshold": {
+        "0": [],
+        "0.92": []
+      }
+    },
+    {
+      "id": "empty",
+      "text": "",
+      "words": 0,
+      "windows": 0,
+      "raw": [],
+      "by_threshold": {
+        "0": [],
+        "0.92": []
+      }
+    },
+    {
+      "id": "whitespace-only",
+      "text": "   \n\t  ",
+      "words": 0,
+      "windows": 0,
+      "raw": [],
+      "by_threshold": {
+        "0": [],
+        "0.92": []
+      }
+    },
+    {
+      "id": "single-name",
+      "text": "Mario Rossi",
+      "words": 2,
+      "windows": 1,
+      "raw": [
+        {
+          "label": "FULLNAME",
+          "start": 0,
+          "end": 11,
+          "score": 0.970536
+        }
+      ],
+      "by_threshold": {
+        "0": [
+          {
+            "label": "FULLNAME",
+            "start": 0,
+            "end": 11,
+            "score": 0.970536
+          }
+        ],
+        "0.92": [
+          {
+            "label": "FULLNAME",
+            "start": 0,
+            "end": 11,
+            "score": 0.970536
+          }
+        ]
+      }
+    },
+    {
+      "id": "long-2-windows",
+      "text": "La carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl pagamento di euro 47.250,00 e' stato disposto sul conto IT12A0300203280123456789012 acceso presso la filiale di Bergamo, con valuta 15/04/2024.\n\nLa convenuta Immobiliare Aurora S.r.l., con sede in Viale Certosa 210, 20156 Milano (MI), partita IVA 09876543210, e' rappresentata dall'avvocato Paolo Ferretti.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.",
+      "words": 158,
+      "windows": 2,
+      "raw": [
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 19,
+          "end": 39,
+          "score": 0.999975
+        },
+        {
+          "label": "DATE",
+          "start": 113,
+          "end": 124,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 152,
+          "end": 178,
+          "score": 0.993234
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 200,
+          "end": 220,
+          "score": 0.999989
+        },
+        {
+          "label": "DATE",
+          "start": 294,
+          "end": 305,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 333,
+          "end": 359,
+          "score": 0.994617
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 381,
+          "end": 401,
+          "score": 0.999992
+        },
+        {
+          "label": "DATE",
+          "start": 475,
+          "end": 486,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 514,
+          "end": 540,
+          "score": 0.993589
+        },
+        {
+          "label": "AMOUNT",
+          "start": 558,
+          "end": 573,
+          "score": 0.999968
+        },
+        {
+          "label": "IBAN",
+          "start": 601,
+          "end": 629,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 657,
+          "end": 665,
+          "score": 0.997117
+        },
+        {
+          "label": "DATE",
+          "start": 677,
+          "end": 688,
+          "score": 0.999999
+        },
+        {
+          "label": "ORG",
+          "start": 703,
+          "end": 728,
+          "score": 0.999965
+        },
+        {
+          "label": "STREET",
+          "start": 742,
+          "end": 756,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 756,
+          "end": 760,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 761,
+          "end": 767,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 767,
+          "end": 774,
+          "score": 0.999993
+        },
+        {
+          "label": "CITY",
+          "start": 657,
+          "end": 665,
+          "score": 0.980178
+        },
+        {
+          "label": "DATE",
+          "start": 677,
+          "end": 688,
+          "score": 0.999998
+        },
+        {
+          "label": "ORG",
+          "start": 703,
+          "end": 728,
+          "score": 0.999939
+        },
+        {
+          "label": "STREET",
+          "start": 742,
+          "end": 756,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 756,
+          "end": 760,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 761,
+          "end": 767,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 767,
+          "end": 774,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 776,
+          "end": 778,
+          "score": 0.999733
+        },
+        {
+          "label": "PIVA",
+          "start": 792,
+          "end": 804,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 836,
+          "end": 851,
+          "score": 0.999998
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 873,
+          "end": 893,
+          "score": 0.999984
+        },
+        {
+          "label": "DATE",
+          "start": 967,
+          "end": 978,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 1006,
+          "end": 1032,
+          "score": 0.997472
+        }
+      ],
+      "by_threshold": {
+        "0": [
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 20,
+            "end": 39,
+            "score": 0.999975
+          },
+          {
+            "label": "DATE",
+            "start": 114,
+            "end": 124,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 153,
+            "end": 178,
+            "score": 0.993234
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 201,
+            "end": 220,
+            "score": 0.999989
+          },
+          {
+            "label": "DATE",
+            "start": 295,
+            "end": 305,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 334,
+            "end": 359,
+            "score": 0.994617
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 382,
+            "end": 401,
+            "score": 0.999992
+          },
+          {
+            "label": "DATE",
+            "start": 476,
+            "end": 486,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 515,
+            "end": 540,
+            "score": 0.993589
+          },
+          {
+            "label": "AMOUNT",
+            "start": 559,
+            "end": 573,
+            "score": 0.999968
+          },
+          {
+            "label": "IBAN",
+            "start": 602,
+            "end": 629,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 658,
+            "end": 665,
+            "score": 0.997117
+          },
+          {
+            "label": "DATE",
+            "start": 678,
+            "end": 688,
+            "score": 0.999999
+          },
+          {
+            "label": "ORG",
+            "start": 704,
+            "end": 728,
+            "score": 0.999965
+          },
+          {
+            "label": "STREET",
+            "start": 743,
+            "end": 756,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 757,
+            "end": 760,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 762,
+            "end": 767,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 768,
+            "end": 774,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 776,
+            "end": 778,
+            "score": 0.999733
+          },
+          {
+            "label": "PIVA",
+            "start": 793,
+            "end": 804,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 837,
+            "end": 851,
+            "score": 0.999998
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 874,
+            "end": 893,
+            "score": 0.999984
+          },
+          {
+            "label": "DATE",
+            "start": 968,
+            "end": 978,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 1007,
+            "end": 1032,
+            "score": 0.997472
+          }
+        ],
+        "0.92": [
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 20,
+            "end": 39,
+            "score": 0.999975
+          },
+          {
+            "label": "DATE",
+            "start": 114,
+            "end": 124,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 153,
+            "end": 178,
+            "score": 0.993234
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 201,
+            "end": 220,
+            "score": 0.999989
+          },
+          {
+            "label": "DATE",
+            "start": 295,
+            "end": 305,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 334,
+            "end": 359,
+            "score": 0.994617
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 382,
+            "end": 401,
+            "score": 0.999992
+          },
+          {
+            "label": "DATE",
+            "start": 476,
+            "end": 486,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 515,
+            "end": 540,
+            "score": 0.993589
+          },
+          {
+            "label": "AMOUNT",
+            "start": 559,
+            "end": 573,
+            "score": 0.999968
+          },
+          {
+            "label": "IBAN",
+            "start": 602,
+            "end": 629,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 658,
+            "end": 665,
+            "score": 0.997117
+          },
+          {
+            "label": "DATE",
+            "start": 678,
+            "end": 688,
+            "score": 0.999999
+          },
+          {
+            "label": "ORG",
+            "start": 704,
+            "end": 728,
+            "score": 0.999965
+          },
+          {
+            "label": "STREET",
+            "start": 743,
+            "end": 756,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 757,
+            "end": 760,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 762,
+            "end": 767,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 768,
+            "end": 774,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 776,
+            "end": 778,
+            "score": 0.999733
+          },
+          {
+            "label": "PIVA",
+            "start": 793,
+            "end": 804,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 837,
+            "end": 851,
+            "score": 0.999998
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 874,
+            "end": 893,
+            "score": 0.999984
+          },
+          {
+            "label": "DATE",
+            "start": 968,
+            "end": 978,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 1007,
+            "end": 1032,
+            "score": 0.997472
+          }
+        ]
+      }
+    },
+    {
+      "id": "long-6-windows",
+      "text": "Il perito Anna Chiara Esposito, codice fiscale SPSNCH80A41F839K, ha depositato la relazione protocollo 2024/PT/00931 relativa al fabbricato censito al foglio 12, particella 345, subalterno 6.\n\nIl ricorrente Giovanni Battista Lombardi, nato il 27/11/1972 a Napoli, residente in Via Chiaia 88, 80132 Napoli (NA), e' assistito dall'avvocato Serena Marini del foro di Roma.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl perito Anna Chiara Esposito, codice fiscale SPSNCH80A41F839K, ha depositato la relazione protocollo 2024/PT/00931 relativa al fabbricato censito al foglio 12, particella 345, subalterno 6.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nCopia degli atti e' stata trasmessa all'indirizzo studio.lombardi@legalmail.it e al numero +39 011 5567890, con riscontro del 22/05/2024.\n\nLa convenuta Immobiliare Aurora S.r.l., con sede in Viale Certosa 210, 20156 Milano (MI), partita IVA 09876543210, e' rappresentata dall'avvocato Paolo Ferretti.\n\nIl pagamento di euro 47.250,00 e' stato disposto sul conto IT12A0300203280123456789012 acceso presso la filiale di Bergamo, con valuta 15/04/2024.\n\nIl perito Anna Chiara Esposito, codice fiscale SPSNCH80A41F839K, ha depositato la relazione protocollo 2024/PT/00931 relativa al fabbricato censito al foglio 12, particella 345, subalterno 6.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl pagamento di euro 47.250,00 e' stato disposto sul conto IT12A0300203280123456789012 acceso presso la filiale di Bergamo, con valuta 15/04/2024.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl ricorrente Giovanni Battista Lombardi, nato il 27/11/1972 a Napoli, residente in Via Chiaia 88, 80132 Napoli (NA), e' assistito dall'avvocato Serena Marini del foro di Roma.\n\nIl ricorrente Giovanni Battista Lombardi, nato il 27/11/1972 a Napoli, residente in Via Chiaia 88, 80132 Napoli (NA), e' assistito dall'avvocato Serena Marini del foro di Roma.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nCopia degli atti e' stata trasmessa all'indirizzo studio.lombardi@legalmail.it e al numero +39 011 5567890, con riscontro del 22/05/2024.",
+      "words": 541,
+      "windows": 6,
+      "raw": [
+        {
+          "label": "FULLNAME",
+          "start": 9,
+          "end": 30,
+          "score": 0.999999
+        },
+        {
+          "label": "CF",
+          "start": 46,
+          "end": 63,
+          "score": 1.0
+        },
+        {
+          "label": "DOCID",
+          "start": 102,
+          "end": 116,
+          "score": 0.99982
+        },
+        {
+          "label": "CATASTO",
+          "start": 157,
+          "end": 160,
+          "score": 1.0
+        },
+        {
+          "label": "CATASTO",
+          "start": 172,
+          "end": 176,
+          "score": 1.0
+        },
+        {
+          "label": "CATASTO",
+          "start": 188,
+          "end": 190,
+          "score": 0.999994
+        },
+        {
+          "label": "FULLNAME",
+          "start": 206,
+          "end": 233,
+          "score": 1.0
+        },
+        {
+          "label": "DATE",
+          "start": 242,
+          "end": 253,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 255,
+          "end": 262,
+          "score": 1.0
+        },
+        {
+          "label": "STREET",
+          "start": 276,
+          "end": 287,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 287,
+          "end": 290,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 291,
+          "end": 297,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 297,
+          "end": 304,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 306,
+          "end": 308,
+          "score": 0.999931
+        },
+        {
+          "label": "FULLNAME",
+          "start": 337,
+          "end": 351,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 363,
+          "end": 368,
+          "score": 0.999396
+        },
+        {
+          "label": "DOCID",
+          "start": 433,
+          "end": 443,
+          "score": 0.999998
+        },
+        {
+          "label": "DATE",
+          "start": 484,
+          "end": 495,
+          "score": 1.0
+        },
+        {
+          "label": "TIME",
+          "start": 504,
+          "end": 510,
+          "score": 0.996146
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 524,
+          "end": 527,
+          "score": 0.953877
+        },
+        {
+          "label": "STREET",
+          "start": 530,
+          "end": 557,
+          "score": 0.98075
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 557,
+          "end": 561,
+          "score": 0.999962
+        },
+        {
+          "label": "FULLNAME",
+          "start": 573,
+          "end": 594,
+          "score": 0.999999
+        },
+        {
+          "label": "CF",
+          "start": 610,
+          "end": 627,
+          "score": 1.0
+        },
+        {
+          "label": "DOCID",
+          "start": 666,
+          "end": 680,
+          "score": 0.999785
+        },
+        {
+          "label": "CATASTO",
+          "start": 721,
+          "end": 724,
+          "score": 1.0
+        },
+        {
+          "label": "CATASTO",
+          "start": 736,
+          "end": 740,
+          "score": 1.0
+        },
+        {
+          "label": "CATASTO",
+          "start": 752,
+          "end": 754,
+          "score": 0.999997
+        },
+        {
+          "label": "TARGA",
+          "start": 775,
+          "end": 785,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 804,
+          "end": 813,
+          "score": 0.999779
+        },
+        {
+          "label": "CATASTO",
+          "start": 721,
+          "end": 724,
+          "score": 0.999996
+        },
+        {
+          "label": "CATASTO",
+          "start": 736,
+          "end": 740,
+          "score": 0.999996
+        },
+        {
+          "label": "CATASTO",
+          "start": 752,
+          "end": 754,
+          "score": 0.999905
+        },
+        {
+          "label": "TARGA",
+          "start": 775,
+          "end": 785,
+          "score": 0.999999
+        },
+        {
+          "label": "FULLNAME",
+          "start": 804,
+          "end": 813,
+          "score": 0.999708
+        },
+        {
+          "label": "IBAN",
+          "start": 848,
+          "end": 849,
+          "score": 0.670087
+        },
+        {
+          "label": "DOCID",
+          "start": 849,
+          "end": 858,
+          "score": 0.803956
+        },
+        {
+          "label": "DATE",
+          "start": 866,
+          "end": 877,
+          "score": 1.0
+        },
+        {
+          "label": "TARGA",
+          "start": 898,
+          "end": 908,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 927,
+          "end": 936,
+          "score": 0.999715
+        },
+        {
+          "label": "IBAN",
+          "start": 971,
+          "end": 972,
+          "score": 0.958517
+        },
+        {
+          "label": "DOCID",
+          "start": 972,
+          "end": 979,
+          "score": 0.726311
+        },
+        {
+          "label": "IBAN",
+          "start": 979,
+          "end": 980,
+          "score": 0.627931
+        },
+        {
+          "label": "DOCID",
+          "start": 980,
+          "end": 981,
+          "score": 0.514063
+        },
+        {
+          "label": "DATE",
+          "start": 989,
+          "end": 1000,
+          "score": 1.0
+        },
+        {
+          "label": "EMAIL",
+          "start": 1052,
+          "end": 1081,
+          "score": 0.999995
+        },
+        {
+          "label": "TELEPHONENUM",
+          "start": 1093,
+          "end": 1109,
+          "score": 1.0
+        },
+        {
+          "label": "DATE",
+          "start": 1128,
+          "end": 1139,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 1154,
+          "end": 1179,
+          "score": 0.999972
+        },
+        {
+          "label": "STREET",
+          "start": 1193,
+          "end": 1207,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 1207,
+          "end": 1211,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 1212,
+          "end": 1218,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 1218,
+          "end": 1225,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 1227,
+          "end": 1229,
+          "score": 0.99988
+        },
+        {
+          "label": "PIVA",
+          "start": 1243,
+          "end": 1255,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 1287,
+          "end": 1302,
+          "score": 1.0
+        },
+        {
+          "label": "AMOUNT",
+          "start": 1320,
+          "end": 1335,
+          "score": 0.999999
+        },
+        {
+          "label": "IBAN",
+          "start": 1363,
+          "end": 1391,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 1419,
+          "end": 1427,
+          "score": 0.999021
+        },
+        {
+          "label": "DATE",
+          "start": 1439,
+          "end": 1450,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 1462,
+          "end": 1483,
+          "score": 0.999999
+        },
+        {
+          "label": "CF",
+          "start": 1499,
+          "end": 1516,
+          "score": 1.0
+        },
+        {
+          "label": "DOCID",
+          "start": 1555,
+          "end": 1569,
+          "score": 0.999444
+        },
+        {
+          "label": "CITY",
+          "start": 1419,
+          "end": 1427,
+          "score": 0.983731
+        },
+        {
+          "label": "DATE",
+          "start": 1439,
+          "end": 1450,
+          "score": 0.999999
+        },
+        {
+          "label": "FULLNAME",
+          "start": 1462,
+          "end": 1483,
+          "score": 0.999989
+        },
+        {
+          "label": "CF",
+          "start": 1499,
+          "end": 1516,
+          "score": 1.0
+        },
+        {
+          "label": "DOCID",
+          "start": 1555,
+          "end": 1569,
+          "score": 0.999749
+        },
+        {
+          "label": "CATASTO",
+          "start": 1610,
+          "end": 1613,
+          "score": 0.999983
+        },
+        {
+          "label": "CATASTO",
+          "start": 1625,
+          "end": 1629,
+          "score": 0.999991
+        },
+        {
+          "label": "CATASTO",
+          "start": 1641,
+          "end": 1643,
+          "score": 0.999615
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 1665,
+          "end": 1685,
+          "score": 0.999995
+        },
+        {
+          "label": "DATE",
+          "start": 1759,
+          "end": 1770,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 1798,
+          "end": 1824,
+          "score": 0.995116
+        },
+        {
+          "label": "DOCID",
+          "start": 1889,
+          "end": 1899,
+          "score": 0.999997
+        },
+        {
+          "label": "DATE",
+          "start": 1940,
+          "end": 1951,
+          "score": 1.0
+        },
+        {
+          "label": "TIME",
+          "start": 1960,
+          "end": 1966,
+          "score": 0.99345
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 1980,
+          "end": 1983,
+          "score": 0.910022
+        },
+        {
+          "label": "STREET",
+          "start": 1986,
+          "end": 2013,
+          "score": 0.997627
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 2013,
+          "end": 2017,
+          "score": 0.999901
+        },
+        {
+          "label": "AMOUNT",
+          "start": 2035,
+          "end": 2050,
+          "score": 0.999997
+        },
+        {
+          "label": "IBAN",
+          "start": 2078,
+          "end": 2106,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2134,
+          "end": 2142,
+          "score": 0.996732
+        },
+        {
+          "label": "DATE",
+          "start": 2154,
+          "end": 2165,
+          "score": 0.999999
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 2187,
+          "end": 2207,
+          "score": 0.999991
+        },
+        {
+          "label": "IBAN",
+          "start": 2078,
+          "end": 2106,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2134,
+          "end": 2142,
+          "score": 0.993997
+        },
+        {
+          "label": "DATE",
+          "start": 2154,
+          "end": 2165,
+          "score": 0.999999
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 2187,
+          "end": 2207,
+          "score": 0.999995
+        },
+        {
+          "label": "DATE",
+          "start": 2281,
+          "end": 2292,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 2320,
+          "end": 2346,
+          "score": 0.996623
+        },
+        {
+          "label": "DOCID",
+          "start": 2411,
+          "end": 2421,
+          "score": 0.999998
+        },
+        {
+          "label": "DATE",
+          "start": 2462,
+          "end": 2473,
+          "score": 1.0
+        },
+        {
+          "label": "TIME",
+          "start": 2482,
+          "end": 2488,
+          "score": 0.995118
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 2502,
+          "end": 2505,
+          "score": 0.944601
+        },
+        {
+          "label": "STREET",
+          "start": 2508,
+          "end": 2535,
+          "score": 0.980546
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 2535,
+          "end": 2539,
+          "score": 0.999935
+        },
+        {
+          "label": "FULLNAME",
+          "start": 2555,
+          "end": 2582,
+          "score": 0.999999
+        },
+        {
+          "label": "DATE",
+          "start": 2591,
+          "end": 2602,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2604,
+          "end": 2611,
+          "score": 0.999999
+        },
+        {
+          "label": "STREET",
+          "start": 2625,
+          "end": 2636,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 2636,
+          "end": 2639,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 2640,
+          "end": 2646,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2646,
+          "end": 2653,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 2655,
+          "end": 2657,
+          "score": 0.999906
+        },
+        {
+          "label": "FULLNAME",
+          "start": 2686,
+          "end": 2700,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2712,
+          "end": 2717,
+          "score": 0.99966
+        },
+        {
+          "label": "FULLNAME",
+          "start": 2733,
+          "end": 2760,
+          "score": 1.0
+        },
+        {
+          "label": "DATE",
+          "start": 2769,
+          "end": 2780,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2782,
+          "end": 2789,
+          "score": 1.0
+        },
+        {
+          "label": "STREET",
+          "start": 2803,
+          "end": 2814,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 2814,
+          "end": 2817,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 2818,
+          "end": 2824,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2824,
+          "end": 2831,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 2833,
+          "end": 2835,
+          "score": 0.999889
+        },
+        {
+          "label": "FULLNAME",
+          "start": 2864,
+          "end": 2871,
+          "score": 0.999964
+        },
+        {
+          "label": "FULLNAME",
+          "start": 2734,
+          "end": 2760,
+          "score": 0.999996
+        },
+        {
+          "label": "DATE",
+          "start": 2769,
+          "end": 2780,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2782,
+          "end": 2789,
+          "score": 1.0
+        },
+        {
+          "label": "STREET",
+          "start": 2803,
+          "end": 2814,
+          "score": 1.0
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 2814,
+          "end": 2817,
+          "score": 1.0
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 2818,
+          "end": 2824,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2824,
+          "end": 2831,
+          "score": 1.0
+        },
+        {
+          "label": "PROVINCE",
+          "start": 2833,
+          "end": 2835,
+          "score": 0.99985
+        },
+        {
+          "label": "FULLNAME",
+          "start": 2864,
+          "end": 2878,
+          "score": 1.0
+        },
+        {
+          "label": "CITY",
+          "start": 2890,
+          "end": 2895,
+          "score": 0.999305
+        },
+        {
+          "label": "CREDITCARDNUMBER",
+          "start": 2917,
+          "end": 2937,
+          "score": 0.999997
+        },
+        {
+          "label": "DATE",
+          "start": 3011,
+          "end": 3022,
+          "score": 1.0
+        },
+        {
+          "label": "ORG",
+          "start": 3050,
+          "end": 3076,
+          "score": 0.996144
+        },
+        {
+          "label": "TARGA",
+          "start": 3097,
+          "end": 3107,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 3126,
+          "end": 3135,
+          "score": 0.999783
+        },
+        {
+          "label": "IBAN",
+          "start": 3170,
+          "end": 3180,
+          "score": 0.81538
+        },
+        {
+          "label": "DATE",
+          "start": 3188,
+          "end": 3199,
+          "score": 1.0
+        },
+        {
+          "label": "DOCID",
+          "start": 3264,
+          "end": 3274,
+          "score": 0.999998
+        },
+        {
+          "label": "DATE",
+          "start": 3315,
+          "end": 3326,
+          "score": 1.0
+        },
+        {
+          "label": "TIME",
+          "start": 3335,
+          "end": 3341,
+          "score": 0.998094
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 3355,
+          "end": 3358,
+          "score": 0.980897
+        },
+        {
+          "label": "STREET",
+          "start": 3361,
+          "end": 3388,
+          "score": 0.998978
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 3388,
+          "end": 3392,
+          "score": 0.999954
+        },
+        {
+          "label": "TARGA",
+          "start": 3413,
+          "end": 3423,
+          "score": 1.0
+        },
+        {
+          "label": "FULLNAME",
+          "start": 3442,
+          "end": 3451,
+          "score": 0.999741
+        },
+        {
+          "label": "IBAN",
+          "start": 3486,
+          "end": 3496,
+          "score": 0.963752
+        },
+        {
+          "label": "STREET",
+          "start": 3376,
+          "end": 3385,
+          "score": 0.772557
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 3388,
+          "end": 3392,
+          "score": 0.685676
+        },
+        {
+          "label": "TARGA",
+          "start": 3413,
+          "end": 3423,
+          "score": 0.999999
+        },
+        {
+          "label": "FULLNAME",
+          "start": 3442,
+          "end": 3451,
+          "score": 0.999293
+        },
+        {
+          "label": "IBAN",
+          "start": 3486,
+          "end": 3494,
+          "score": 0.690705
+        },
+        {
+          "label": "ID_DOC",
+          "start": 3494,
+          "end": 3495,
+          "score": 0.507037
+        },
+        {
+          "label": "IBAN",
+          "start": 3495,
+          "end": 3496,
+          "score": 0.611109
+        },
+        {
+          "label": "DATE",
+          "start": 3504,
+          "end": 3515,
+          "score": 0.999999
+        },
+        {
+          "label": "EMAIL",
+          "start": 3567,
+          "end": 3596,
+          "score": 0.999948
+        },
+        {
+          "label": "TELEPHONENUM",
+          "start": 3608,
+          "end": 3624,
+          "score": 0.999997
+        },
+        {
+          "label": "DATE",
+          "start": 3643,
+          "end": 3654,
+          "score": 0.999999
+        }
+      ],
+      "by_threshold": {
+        "0": [
+          {
+            "label": "FULLNAME",
+            "start": 10,
+            "end": 30,
+            "score": 0.999999
+          },
+          {
+            "label": "CF",
+            "start": 47,
+            "end": 63,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 103,
+            "end": 116,
+            "score": 0.99982
+          },
+          {
+            "label": "CATASTO",
+            "start": 158,
+            "end": 160,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 173,
+            "end": 176,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 189,
+            "end": 190,
+            "score": 0.999994
+          },
+          {
+            "label": "FULLNAME",
+            "start": 207,
+            "end": 233,
+            "score": 1.0
+          },
+          {
+            "label": "DATE",
+            "start": 243,
+            "end": 253,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 256,
+            "end": 262,
+            "score": 1.0
+          },
+          {
+            "label": "STREET",
+            "start": 277,
+            "end": 287,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 288,
+            "end": 290,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 292,
+            "end": 297,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 298,
+            "end": 304,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 306,
+            "end": 308,
+            "score": 0.999931
+          },
+          {
+            "label": "FULLNAME",
+            "start": 338,
+            "end": 351,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 364,
+            "end": 368,
+            "score": 0.999396
+          },
+          {
+            "label": "DOCID",
+            "start": 434,
+            "end": 443,
+            "score": 0.999998
+          },
+          {
+            "label": "DATE",
+            "start": 485,
+            "end": 495,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 505,
+            "end": 510,
+            "score": 0.996146
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 525,
+            "end": 527,
+            "score": 0.953877
+          },
+          {
+            "label": "STREET",
+            "start": 531,
+            "end": 557,
+            "score": 0.98075
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 558,
+            "end": 561,
+            "score": 0.999962
+          },
+          {
+            "label": "FULLNAME",
+            "start": 574,
+            "end": 594,
+            "score": 0.999999
+          },
+          {
+            "label": "CF",
+            "start": 611,
+            "end": 627,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 667,
+            "end": 680,
+            "score": 0.999785
+          },
+          {
+            "label": "CATASTO",
+            "start": 722,
+            "end": 724,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 737,
+            "end": 740,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 753,
+            "end": 754,
+            "score": 0.999997
+          },
+          {
+            "label": "TARGA",
+            "start": 776,
+            "end": 785,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 805,
+            "end": 813,
+            "score": 0.999779
+          },
+          {
+            "label": "DOCID",
+            "start": 849,
+            "end": 858,
+            "score": 0.803956
+          },
+          {
+            "label": "DATE",
+            "start": 867,
+            "end": 877,
+            "score": 1.0
+          },
+          {
+            "label": "TARGA",
+            "start": 899,
+            "end": 908,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 928,
+            "end": 936,
+            "score": 0.999715
+          },
+          {
+            "label": "DOCID",
+            "start": 972,
+            "end": 981,
+            "score": 0.726311
+          },
+          {
+            "label": "DATE",
+            "start": 990,
+            "end": 1000,
+            "score": 1.0
+          },
+          {
+            "label": "EMAIL",
+            "start": 1053,
+            "end": 1081,
+            "score": 0.999995
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 1094,
+            "end": 1109,
+            "score": 1.0
+          },
+          {
+            "label": "DATE",
+            "start": 1129,
+            "end": 1139,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 1155,
+            "end": 1179,
+            "score": 0.999972
+          },
+          {
+            "label": "STREET",
+            "start": 1194,
+            "end": 1207,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 1208,
+            "end": 1211,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 1213,
+            "end": 1218,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 1219,
+            "end": 1225,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 1227,
+            "end": 1229,
+            "score": 0.99988
+          },
+          {
+            "label": "PIVA",
+            "start": 1244,
+            "end": 1255,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 1288,
+            "end": 1302,
+            "score": 1.0
+          },
+          {
+            "label": "AMOUNT",
+            "start": 1321,
+            "end": 1335,
+            "score": 0.999999
+          },
+          {
+            "label": "IBAN",
+            "start": 1364,
+            "end": 1391,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 1420,
+            "end": 1427,
+            "score": 0.999021
+          },
+          {
+            "label": "DATE",
+            "start": 1440,
+            "end": 1450,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 1463,
+            "end": 1483,
+            "score": 0.999999
+          },
+          {
+            "label": "CF",
+            "start": 1500,
+            "end": 1516,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 1556,
+            "end": 1569,
+            "score": 0.999749
+          },
+          {
+            "label": "CATASTO",
+            "start": 1611,
+            "end": 1613,
+            "score": 0.999983
+          },
+          {
+            "label": "CATASTO",
+            "start": 1626,
+            "end": 1629,
+            "score": 0.999991
+          },
+          {
+            "label": "CATASTO",
+            "start": 1642,
+            "end": 1643,
+            "score": 0.999615
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 1666,
+            "end": 1685,
+            "score": 0.999995
+          },
+          {
+            "label": "DATE",
+            "start": 1760,
+            "end": 1770,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 1799,
+            "end": 1824,
+            "score": 0.995116
+          },
+          {
+            "label": "DOCID",
+            "start": 1890,
+            "end": 1899,
+            "score": 0.999997
+          },
+          {
+            "label": "DATE",
+            "start": 1941,
+            "end": 1951,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 1961,
+            "end": 1966,
+            "score": 0.99345
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 1981,
+            "end": 1983,
+            "score": 0.910022
+          },
+          {
+            "label": "STREET",
+            "start": 1987,
+            "end": 2013,
+            "score": 0.997627
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2014,
+            "end": 2017,
+            "score": 0.999901
+          },
+          {
+            "label": "AMOUNT",
+            "start": 2036,
+            "end": 2050,
+            "score": 0.999997
+          },
+          {
+            "label": "IBAN",
+            "start": 2079,
+            "end": 2106,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2135,
+            "end": 2142,
+            "score": 0.996732
+          },
+          {
+            "label": "DATE",
+            "start": 2155,
+            "end": 2165,
+            "score": 0.999999
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 2188,
+            "end": 2207,
+            "score": 0.999995
+          },
+          {
+            "label": "DATE",
+            "start": 2282,
+            "end": 2292,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 2321,
+            "end": 2346,
+            "score": 0.996623
+          },
+          {
+            "label": "DOCID",
+            "start": 2412,
+            "end": 2421,
+            "score": 0.999998
+          },
+          {
+            "label": "DATE",
+            "start": 2463,
+            "end": 2473,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 2483,
+            "end": 2488,
+            "score": 0.995118
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2503,
+            "end": 2505,
+            "score": 0.944601
+          },
+          {
+            "label": "STREET",
+            "start": 2509,
+            "end": 2535,
+            "score": 0.980546
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2536,
+            "end": 2539,
+            "score": 0.999935
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2556,
+            "end": 2582,
+            "score": 0.999999
+          },
+          {
+            "label": "DATE",
+            "start": 2592,
+            "end": 2602,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2605,
+            "end": 2611,
+            "score": 0.999999
+          },
+          {
+            "label": "STREET",
+            "start": 2626,
+            "end": 2636,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2637,
+            "end": 2639,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 2641,
+            "end": 2646,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2647,
+            "end": 2653,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 2655,
+            "end": 2657,
+            "score": 0.999906
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2687,
+            "end": 2700,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2713,
+            "end": 2717,
+            "score": 0.99966
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2734,
+            "end": 2760,
+            "score": 1.0
+          },
+          {
+            "label": "DATE",
+            "start": 2770,
+            "end": 2780,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2783,
+            "end": 2789,
+            "score": 1.0
+          },
+          {
+            "label": "STREET",
+            "start": 2804,
+            "end": 2814,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2815,
+            "end": 2817,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 2819,
+            "end": 2824,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2825,
+            "end": 2831,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 2833,
+            "end": 2835,
+            "score": 0.999889
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2865,
+            "end": 2878,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2891,
+            "end": 2895,
+            "score": 0.999305
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 2918,
+            "end": 2937,
+            "score": 0.999997
+          },
+          {
+            "label": "DATE",
+            "start": 3012,
+            "end": 3022,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 3051,
+            "end": 3076,
+            "score": 0.996144
+          },
+          {
+            "label": "TARGA",
+            "start": 3098,
+            "end": 3107,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 3127,
+            "end": 3135,
+            "score": 0.999783
+          },
+          {
+            "label": "IBAN",
+            "start": 3171,
+            "end": 3180,
+            "score": 0.81538
+          },
+          {
+            "label": "DATE",
+            "start": 3189,
+            "end": 3199,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 3265,
+            "end": 3274,
+            "score": 0.999998
+          },
+          {
+            "label": "DATE",
+            "start": 3316,
+            "end": 3326,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 3336,
+            "end": 3341,
+            "score": 0.998094
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 3356,
+            "end": 3358,
+            "score": 0.980897
+          },
+          {
+            "label": "STREET",
+            "start": 3362,
+            "end": 3388,
+            "score": 0.998978
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 3389,
+            "end": 3392,
+            "score": 0.999954
+          },
+          {
+            "label": "TARGA",
+            "start": 3414,
+            "end": 3423,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 3443,
+            "end": 3451,
+            "score": 0.999741
+          },
+          {
+            "label": "IBAN",
+            "start": 3487,
+            "end": 3496,
+            "score": 0.963752
+          },
+          {
+            "label": "DATE",
+            "start": 3505,
+            "end": 3515,
+            "score": 0.999999
+          },
+          {
+            "label": "EMAIL",
+            "start": 3568,
+            "end": 3596,
+            "score": 0.999948
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 3609,
+            "end": 3624,
+            "score": 0.999997
+          },
+          {
+            "label": "DATE",
+            "start": 3644,
+            "end": 3654,
+            "score": 0.999999
+          }
+        ],
+        "0.92": [
+          {
+            "label": "FULLNAME",
+            "start": 10,
+            "end": 30,
+            "score": 0.999999
+          },
+          {
+            "label": "CF",
+            "start": 47,
+            "end": 63,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 103,
+            "end": 116,
+            "score": 0.99982
+          },
+          {
+            "label": "CATASTO",
+            "start": 158,
+            "end": 160,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 173,
+            "end": 176,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 189,
+            "end": 190,
+            "score": 0.999994
+          },
+          {
+            "label": "FULLNAME",
+            "start": 207,
+            "end": 233,
+            "score": 1.0
+          },
+          {
+            "label": "DATE",
+            "start": 243,
+            "end": 253,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 256,
+            "end": 262,
+            "score": 1.0
+          },
+          {
+            "label": "STREET",
+            "start": 277,
+            "end": 287,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 288,
+            "end": 290,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 292,
+            "end": 297,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 298,
+            "end": 304,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 306,
+            "end": 308,
+            "score": 0.999931
+          },
+          {
+            "label": "FULLNAME",
+            "start": 338,
+            "end": 351,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 364,
+            "end": 368,
+            "score": 0.999396
+          },
+          {
+            "label": "DOCID",
+            "start": 434,
+            "end": 443,
+            "score": 0.999998
+          },
+          {
+            "label": "DATE",
+            "start": 485,
+            "end": 495,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 505,
+            "end": 510,
+            "score": 0.996146
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 525,
+            "end": 527,
+            "score": 0.953877
+          },
+          {
+            "label": "STREET",
+            "start": 531,
+            "end": 557,
+            "score": 0.98075
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 558,
+            "end": 561,
+            "score": 0.999962
+          },
+          {
+            "label": "FULLNAME",
+            "start": 574,
+            "end": 594,
+            "score": 0.999999
+          },
+          {
+            "label": "CF",
+            "start": 611,
+            "end": 627,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 667,
+            "end": 680,
+            "score": 0.999785
+          },
+          {
+            "label": "CATASTO",
+            "start": 722,
+            "end": 724,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 737,
+            "end": 740,
+            "score": 1.0
+          },
+          {
+            "label": "CATASTO",
+            "start": 753,
+            "end": 754,
+            "score": 0.999997
+          },
+          {
+            "label": "TARGA",
+            "start": 776,
+            "end": 785,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 805,
+            "end": 813,
+            "score": 0.999779
+          },
+          {
+            "label": "DATE",
+            "start": 867,
+            "end": 877,
+            "score": 1.0
+          },
+          {
+            "label": "TARGA",
+            "start": 899,
+            "end": 908,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 928,
+            "end": 936,
+            "score": 0.999715
+          },
+          {
+            "label": "DATE",
+            "start": 990,
+            "end": 1000,
+            "score": 1.0
+          },
+          {
+            "label": "EMAIL",
+            "start": 1053,
+            "end": 1081,
+            "score": 0.999995
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 1094,
+            "end": 1109,
+            "score": 1.0
+          },
+          {
+            "label": "DATE",
+            "start": 1129,
+            "end": 1139,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 1155,
+            "end": 1179,
+            "score": 0.999972
+          },
+          {
+            "label": "STREET",
+            "start": 1194,
+            "end": 1207,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 1208,
+            "end": 1211,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 1213,
+            "end": 1218,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 1219,
+            "end": 1225,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 1227,
+            "end": 1229,
+            "score": 0.99988
+          },
+          {
+            "label": "PIVA",
+            "start": 1244,
+            "end": 1255,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 1288,
+            "end": 1302,
+            "score": 1.0
+          },
+          {
+            "label": "AMOUNT",
+            "start": 1321,
+            "end": 1335,
+            "score": 0.999999
+          },
+          {
+            "label": "IBAN",
+            "start": 1364,
+            "end": 1391,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 1420,
+            "end": 1427,
+            "score": 0.999021
+          },
+          {
+            "label": "DATE",
+            "start": 1440,
+            "end": 1450,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 1463,
+            "end": 1483,
+            "score": 0.999999
+          },
+          {
+            "label": "CF",
+            "start": 1500,
+            "end": 1516,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 1556,
+            "end": 1569,
+            "score": 0.999749
+          },
+          {
+            "label": "CATASTO",
+            "start": 1611,
+            "end": 1613,
+            "score": 0.999983
+          },
+          {
+            "label": "CATASTO",
+            "start": 1626,
+            "end": 1629,
+            "score": 0.999991
+          },
+          {
+            "label": "CATASTO",
+            "start": 1642,
+            "end": 1643,
+            "score": 0.999615
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 1666,
+            "end": 1685,
+            "score": 0.999995
+          },
+          {
+            "label": "DATE",
+            "start": 1760,
+            "end": 1770,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 1799,
+            "end": 1824,
+            "score": 0.995116
+          },
+          {
+            "label": "DOCID",
+            "start": 1890,
+            "end": 1899,
+            "score": 0.999997
+          },
+          {
+            "label": "DATE",
+            "start": 1941,
+            "end": 1951,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 1961,
+            "end": 1966,
+            "score": 0.99345
+          },
+          {
+            "label": "STREET",
+            "start": 1987,
+            "end": 2013,
+            "score": 0.997627
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2014,
+            "end": 2017,
+            "score": 0.999901
+          },
+          {
+            "label": "AMOUNT",
+            "start": 2036,
+            "end": 2050,
+            "score": 0.999997
+          },
+          {
+            "label": "IBAN",
+            "start": 2079,
+            "end": 2106,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2135,
+            "end": 2142,
+            "score": 0.996732
+          },
+          {
+            "label": "DATE",
+            "start": 2155,
+            "end": 2165,
+            "score": 0.999999
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 2188,
+            "end": 2207,
+            "score": 0.999995
+          },
+          {
+            "label": "DATE",
+            "start": 2282,
+            "end": 2292,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 2321,
+            "end": 2346,
+            "score": 0.996623
+          },
+          {
+            "label": "DOCID",
+            "start": 2412,
+            "end": 2421,
+            "score": 0.999998
+          },
+          {
+            "label": "DATE",
+            "start": 2463,
+            "end": 2473,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 2483,
+            "end": 2488,
+            "score": 0.995118
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2503,
+            "end": 2505,
+            "score": 0.944601
+          },
+          {
+            "label": "STREET",
+            "start": 2509,
+            "end": 2535,
+            "score": 0.980546
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2536,
+            "end": 2539,
+            "score": 0.999935
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2556,
+            "end": 2582,
+            "score": 0.999999
+          },
+          {
+            "label": "DATE",
+            "start": 2592,
+            "end": 2602,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2605,
+            "end": 2611,
+            "score": 0.999999
+          },
+          {
+            "label": "STREET",
+            "start": 2626,
+            "end": 2636,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2637,
+            "end": 2639,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 2641,
+            "end": 2646,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2647,
+            "end": 2653,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 2655,
+            "end": 2657,
+            "score": 0.999906
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2687,
+            "end": 2700,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2713,
+            "end": 2717,
+            "score": 0.99966
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2734,
+            "end": 2760,
+            "score": 1.0
+          },
+          {
+            "label": "DATE",
+            "start": 2770,
+            "end": 2780,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2783,
+            "end": 2789,
+            "score": 1.0
+          },
+          {
+            "label": "STREET",
+            "start": 2804,
+            "end": 2814,
+            "score": 1.0
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 2815,
+            "end": 2817,
+            "score": 1.0
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 2819,
+            "end": 2824,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2825,
+            "end": 2831,
+            "score": 1.0
+          },
+          {
+            "label": "PROVINCE",
+            "start": 2833,
+            "end": 2835,
+            "score": 0.999889
+          },
+          {
+            "label": "FULLNAME",
+            "start": 2865,
+            "end": 2878,
+            "score": 1.0
+          },
+          {
+            "label": "CITY",
+            "start": 2891,
+            "end": 2895,
+            "score": 0.999305
+          },
+          {
+            "label": "CREDITCARDNUMBER",
+            "start": 2918,
+            "end": 2937,
+            "score": 0.999997
+          },
+          {
+            "label": "DATE",
+            "start": 3012,
+            "end": 3022,
+            "score": 1.0
+          },
+          {
+            "label": "ORG",
+            "start": 3051,
+            "end": 3076,
+            "score": 0.996144
+          },
+          {
+            "label": "TARGA",
+            "start": 3098,
+            "end": 3107,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 3127,
+            "end": 3135,
+            "score": 0.999783
+          },
+          {
+            "label": "DATE",
+            "start": 3189,
+            "end": 3199,
+            "score": 1.0
+          },
+          {
+            "label": "DOCID",
+            "start": 3265,
+            "end": 3274,
+            "score": 0.999998
+          },
+          {
+            "label": "DATE",
+            "start": 3316,
+            "end": 3326,
+            "score": 1.0
+          },
+          {
+            "label": "TIME",
+            "start": 3336,
+            "end": 3341,
+            "score": 0.998094
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 3356,
+            "end": 3358,
+            "score": 0.980897
+          },
+          {
+            "label": "STREET",
+            "start": 3362,
+            "end": 3388,
+            "score": 0.998978
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 3389,
+            "end": 3392,
+            "score": 0.999954
+          },
+          {
+            "label": "TARGA",
+            "start": 3414,
+            "end": 3423,
+            "score": 1.0
+          },
+          {
+            "label": "FULLNAME",
+            "start": 3443,
+            "end": 3451,
+            "score": 0.999741
+          },
+          {
+            "label": "IBAN",
+            "start": 3487,
+            "end": 3496,
+            "score": 0.963752
+          },
+          {
+            "label": "DATE",
+            "start": 3505,
+            "end": 3515,
+            "score": 0.999999
+          },
+          {
+            "label": "EMAIL",
+            "start": 3568,
+            "end": 3596,
+            "score": 0.999948
+          },
+          {
+            "label": "TELEPHONENUM",
+            "start": 3609,
+            "end": 3624,
+            "score": 0.999997
+          },
+          {
+            "label": "DATE",
+            "start": 3644,
+            "end": 3654,
+            "score": 0.999999
+          }
+        ]
+      }
+    },
+    {
+      "id": "long-boundary",
+      "text": "parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola Il sig. Alessandro Manzoni Ferrari risiede in Via Solferino 7, 20121 Milano.",
+      "words": 130,
+      "windows": 2,
+      "raw": [
+        {
+          "label": "FULLNAME",
+          "start": 833,
+          "end": 860,
+          "score": 0.999983
+        },
+        {
+          "label": "STREET",
+          "start": 871,
+          "end": 885,
+          "score": 0.99999
+        },
+        {
+          "label": "BUILDINGNUM",
+          "start": 885,
+          "end": 887,
+          "score": 0.999996
+        },
+        {
+          "label": "ZIPCODE",
+          "start": 888,
+          "end": 894,
+          "score": 0.999998
+        },
+        {
+          "label": "CITY",
+          "start": 894,
+          "end": 901,
+          "score": 0.999963
+        }
+      ],
+      "by_threshold": {
+        "0": [
+          {
+            "label": "FULLNAME",
+            "start": 834,
+            "end": 860,
+            "score": 0.999983
+          },
+          {
+            "label": "STREET",
+            "start": 872,
+            "end": 885,
+            "score": 0.99999
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 886,
+            "end": 887,
+            "score": 0.999996
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 889,
+            "end": 894,
+            "score": 0.999998
+          },
+          {
+            "label": "CITY",
+            "start": 895,
+            "end": 901,
+            "score": 0.999963
+          }
+        ],
+        "0.92": [
+          {
+            "label": "FULLNAME",
+            "start": 834,
+            "end": 860,
+            "score": 0.999983
+          },
+          {
+            "label": "STREET",
+            "start": 872,
+            "end": 885,
+            "score": 0.99999
+          },
+          {
+            "label": "BUILDINGNUM",
+            "start": 886,
+            "end": 887,
+            "score": 0.999996
+          },
+          {
+            "label": "ZIPCODE",
+            "start": 889,
+            "end": 894,
+            "score": 0.999998
+          },
+          {
+            "label": "CITY",
+            "start": 895,
+            "end": 901,
+            "score": 0.999963
+          }
+        ]
+      }
+    }
+  ]
+}

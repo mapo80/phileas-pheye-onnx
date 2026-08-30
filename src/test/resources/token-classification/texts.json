@@ -1,0 +1,38 @@
+[
+  {
+    "id": "short-mixed",
+    "text": "Il giorno 12/06/1985 il sig. Mario Rossi, nato a Milano, residente in Via Garibaldi 24, 00185 Roma (RM), codice fiscale RSSMRA85H12F205Z, ha versato euro 12.500,00 sul conto IT60X0542811101000000123456 presso Edilnord S.r.l., telefono +39 333 1234567, email m.rossi@studio.it."
+  },
+  {
+    "id": "accents-and-newlines",
+    "text": "L'avvocato Niccolo' D'Angio', con studio in Piazza Sant'Ambrogio 3, 20123 Milano (MI), ha depositato il ricorso n. 1234/2024 per conto della societa' Fratelli Bevilacqua & C. S.p.A., partita IVA 12345678903.\nRecapito: niccolo.dangio@pec.avvocatimilano.it\tTel. 02 8765432."
+  },
+  {
+    "id": "no-pii",
+    "text": "La riunione si e' svolta secondo l'ordine del giorno previsto. Sono stati discussi i punti relativi all'andamento generale e alle procedure interne, senza rilievi particolari. Il documento e' stato approvato all'unanimita' dai presenti."
+  },
+  {
+    "id": "empty",
+    "text": ""
+  },
+  {
+    "id": "whitespace-only",
+    "text": "   \n\t  "
+  },
+  {
+    "id": "single-name",
+    "text": "Mario Rossi"
+  },
+  {
+    "id": "long-2-windows",
+    "text": "La carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl pagamento di euro 47.250,00 e' stato disposto sul conto IT12A0300203280123456789012 acceso presso la filiale di Bergamo, con valuta 15/04/2024.\n\nLa convenuta Immobiliare Aurora S.r.l., con sede in Viale Certosa 210, 20156 Milano (MI), partita IVA 09876543210, e' rappresentata dall'avvocato Paolo Ferretti.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio."
+  },
+  {
+    "id": "long-6-windows",
+    "text": "Il perito Anna Chiara Esposito, codice fiscale SPSNCH80A41F839K, ha depositato la relazione protocollo 2024/PT/00931 relativa al fabbricato censito al foglio 12, particella 345, subalterno 6.\n\nIl ricorrente Giovanni Battista Lombardi, nato il 27/11/1972 a Napoli, residente in Via Chiaia 88, 80132 Napoli (NA), e' assistito dall'avvocato Serena Marini del foro di Roma.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl perito Anna Chiara Esposito, codice fiscale SPSNCH80A41F839K, ha depositato la relazione protocollo 2024/PT/00931 relativa al fabbricato censito al foglio 12, particella 345, subalterno 6.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nCopia degli atti e' stata trasmessa all'indirizzo studio.lombardi@legalmail.it e al numero +39 011 5567890, con riscontro del 22/05/2024.\n\nLa convenuta Immobiliare Aurora S.r.l., con sede in Viale Certosa 210, 20156 Milano (MI), partita IVA 09876543210, e' rappresentata dall'avvocato Paolo Ferretti.\n\nIl pagamento di euro 47.250,00 e' stato disposto sul conto IT12A0300203280123456789012 acceso presso la filiale di Bergamo, con valuta 15/04/2024.\n\nIl perito Anna Chiara Esposito, codice fiscale SPSNCH80A41F839K, ha depositato la relazione protocollo 2024/PT/00931 relativa al fabbricato censito al foglio 12, particella 345, subalterno 6.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl pagamento di euro 47.250,00 e' stato disposto sul conto IT12A0300203280123456789012 acceso presso la filiale di Bergamo, con valuta 15/04/2024.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl ricorrente Giovanni Battista Lombardi, nato il 27/11/1972 a Napoli, residente in Via Chiaia 88, 80132 Napoli (NA), e' assistito dall'avvocato Serena Marini del foro di Roma.\n\nIl ricorrente Giovanni Battista Lombardi, nato il 27/11/1972 a Napoli, residente in Via Chiaia 88, 80132 Napoli (NA), e' assistito dall'avvocato Serena Marini del foro di Roma.\n\nLa carta di credito 4111 1111 1111 1111 utilizzata per il deposito e' stata bloccata su richiesta del titolare il 02/06/2024, come da segnalazione della Banca Popolare di Sondrio.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nIl Tribunale di Torino, nella causa iscritta al ruolo generale 5678/2023, ha convocato le parti per l'udienza del 03/09/2024 alle ore 09:30 presso l'aula 14 di Corso Vittorio Emanuele II 130.\n\nIl veicolo targato AB 123 CD, intestato al sig. Lombardi, risulta assicurato con polizza n. 778899001 fino al 31/12/2025.\n\nCopia degli atti e' stata trasmessa all'indirizzo studio.lombardi@legalmail.it e al numero +39 011 5567890, con riscontro del 22/05/2024."
+  },
+  {
+    "id": "long-boundary",
+    "text": "parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola parola Il sig. Alessandro Manzoni Ferrari risiede in Via Solferino 7, 20121 Milano."
+  }
+]
