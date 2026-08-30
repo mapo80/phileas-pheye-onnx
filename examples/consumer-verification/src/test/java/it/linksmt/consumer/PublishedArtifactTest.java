@@ -48,8 +48,13 @@ class PublishedArtifactTest {
         final String source = LocalPhEyeDetector.class.getProtectionDomain()
                 .getCodeSource().getLocation().toString();
         System.out.println("LocalPhEyeDetector loaded from: " + source);
-        assertTrue(source.contains("phileas-pheye-onnx-1.2.0.jar"),
-                "must come from the published 1.2.0 jar, got " + source);
+        // Not pinned to one release: this project's own version moves, and hardcoding it here has
+        // already gone stale once (this check named 1.2.0 through the 1.3.0 and 1.4.0 releases).
+        // What actually needs proving is that the class came from a real, versioned
+        // phileas-pheye-onnx coordinate resolved via Maven -- not from some accidental classpath
+        // override -- which a version-agnostic pattern proves just as well and never goes stale.
+        assertTrue(source.matches(".*phileas-pheye-onnx-\\d+\\.\\d+\\.\\d+.*\\.jar"),
+                "must come from a published phileas-pheye-onnx jar, got " + source);
     }
 
     @Test
