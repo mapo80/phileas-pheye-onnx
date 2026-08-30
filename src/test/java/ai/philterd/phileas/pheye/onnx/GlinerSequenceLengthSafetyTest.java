@@ -20,20 +20,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * The mechanics of {@link LocalPhEyeOptions#maxSequenceTokens()} against the committed synthetic
- * fixture, forced to trigger by setting the ceiling far below what any real window needs.
+ * The mechanics of {@link LocalPhEyeOptions#maxSequenceTokens()} against the synthetic GLiNER
+ * fixture in {@code src/test/resources/gliner-fixture/} (see that directory's README), forced to
+ * trigger by setting the ceiling far below what any real window needs.
  *
- * <p>This exists to pin the mechanism fast and deterministically, without a multi-hundred-MB model:
+ * <p>Skipped, not failed, when the fixture model is absent -- same as {@link
+ * LocalPhEyeDetectorParityTest}, which this fixture also serves. This exists to pin the mechanism
+ * fast and deterministically, without a multi-hundred-MB model:
  * the fixture's graph produces a known, fixed span (word 0, width 1, label 0; see
  * {@code gliner-fixture/README.md}) regardless of content, so a leaf window that ends up covering
  * global word 0 must find it, whatever bisection happened to reach that leaf. This is the
@@ -58,10 +60,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class GlinerSequenceLengthSafetyTest {
 
-    private static Path fixtureDir() throws Exception {
-        final URL url = GlinerSequenceLengthSafetyTest.class.getResource("/gliner-fixture/gliner_config.json");
-        assertNotNull(url, "the gliner-fixture is missing from the test resources");
-        return Path.of(url.toURI()).getParent();
+    private static Path fixtureDir() {
+        final Path dir = FixtureModel.dir();
+        assumeTrue(dir != null, "GLiNER fixture model.onnx not on the test classpath; skipping.");
+        return dir;
     }
 
     @Test
