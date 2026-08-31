@@ -137,7 +137,7 @@ class LocalTokenClassifierParityTest {
     @Test
     @DisplayName("Every span matches the Python reference at the model's calibrated threshold")
     void matchesReferenceAtCalibratedThreshold() throws Exception {
-        assertParityAt(0.92, "0.92");
+        assertParityAt(0.98, "0.98");
     }
 
     @Test
@@ -148,7 +148,7 @@ class LocalTokenClassifierParityTest {
         final JsonObject reference = reference();
 
         try (final LocalTokenClassifierDetector detector =
-                     new LocalTokenClassifierDetector(dir, LocalPhEyeOptions.withThreshold(0.92))) {
+                     new LocalTokenClassifierDetector(dir, LocalPhEyeOptions.withThreshold(0.98))) {
 
             for (final JsonElement element : reference.getAsJsonArray("documents")) {
 

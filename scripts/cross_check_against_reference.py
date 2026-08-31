@@ -9,7 +9,11 @@ in a window offset, a boundary entity counted twice, a tie broken the other way.
         --model-dir  MODEL_DIR \
         --weights    HF_CHECKPOINT \
         --documents  corpus.jsonl        # one {"id", "text"} per line
-        --threshold  0.92
+        --threshold  0.98
+
+For a model that exists only as a quantized ONNX export, with no torch checkpoint, pass --onnx
+instead of --weights: the reference then runs the packaged model's own graph directly via
+onnxruntime rather than through a torch checkpoint.
 """
 
 from __future__ import annotations
@@ -24,7 +28,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from generate_token_classification_fixture import chunk_text, reduce_spans  # noqa: E402
+from generate_token_classification_fixture import chunk_text, reduce_spans, onnx_scorer  # noqa: E402
 
 
 def utf16_offsets(text: str) -> list[int]:
@@ -43,32 +47,34 @@ def utf16_offsets(text: str) -> list[int]:
     return offsets
 
 
-def python_reference(model_dir: Path, weights: Path, documents: list[dict],
-                     threshold: float) -> dict[str, list[tuple]]:
+def python_reference(model_dir: Path, weights: Path | None, documents: list[dict],
+                     threshold: float, use_onnx: bool = False) -> dict[str, list[tuple]]:
     window = json.loads((model_dir / "token_classification_config.json").read_text(encoding="utf-8"))
     max_words, overlap = int(window["max_words"]), int(window["overlap_words"])
 
-    from transformers import AutoTokenizer, pipeline
-
-    tokenizer = AutoTokenizer.from_pretrained(str(model_dir))
-    tokenizer.model_input_names = [n for n in tokenizer.model_input_names if n != "token_type_ids"]
-    nlp = pipeline("token-classification", model=str(weights), tokenizer=tokenizer,
-                   aggregation_strategy="simple", device=-1)
+    if use_onnx:
+        score_chunk = onnx_scorer(model_dir, int(window["max_tokens"]))
+    else:
+        from transformers import AutoTokenizer, pipeline
+        tokenizer = AutoTokenizer.from_pretrained(str(model_dir))
+        tokenizer.model_input_names = [n for n in tokenizer.model_input_names if n != "token_type_ids"]
+        nlp = pipeline("token-classification", model=str(weights), tokenizer=tokenizer,
+                       aggregation_strategy="simple", device=-1)
+        score_chunk = nlp
 
     spans: dict[str, list[tuple]] = {}
     for index, document in enumerate(documents, start=1):
         text = document["text"]
         chunks = chunk_text(text, max_words, overlap)
         raw = []
-        if chunks:
-            for (_, offset), entities in zip(chunks, nlp([c for c, _ in chunks])):
-                for entity in entities:
-                    score = float(entity["score"])
-                    if score >= threshold:
-                        raw.append({"label": entity["entity_group"],
-                                    "start": int(entity["start"]) + offset,
-                                    "end": int(entity["end"]) + offset,
-                                    "score": score})
+        for chunk, offset in chunks:
+            for entity in score_chunk(chunk):
+                score = float(entity["score"])
+                if score >= threshold:
+                    raw.append({"label": entity["entity_group"],
+                                "start": int(entity["start"]) + offset,
+                                "end": int(entity["end"]) + offset,
+                                "score": score})
         to_utf16 = utf16_offsets(text)
         spans[document["id"]] = [(s["label"], to_utf16[s["start"]], to_utf16[s["end"]])
                                  for s in reduce_spans(raw, text)]
@@ -100,11 +106,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--model-dir", type=Path, required=True)
-    parser.add_argument("--weights", type=Path, required=True)
+    parser.add_argument("--weights", type=Path, default=None,
+                        help="checkpoint holding the torch weights; required unless --onnx is given")
+    parser.add_argument("--onnx", action="store_true",
+                        help="drive the model directory's own ONNX graph directly via onnxruntime "
+                             "instead of a torch checkpoint")
     parser.add_argument("--documents", type=Path, required=True)
-    parser.add_argument("--threshold", type=float, default=0.92)
+    parser.add_argument("--threshold", type=float, default=0.98)
     parser.add_argument("--classpath", default="target/test-classes:target/classes:@target/classpath.txt")
     args = parser.parse_args()
+
+    if not args.onnx and args.weights is None:
+        raise SystemExit("--weights is required unless --onnx is given")
 
     classpath = args.classpath
     if "@" in classpath:
@@ -116,7 +129,7 @@ def main() -> int:
     print(f"{len(documents)} documents, threshold {args.threshold}"
           f" ({astral} with characters outside the Basic Multilingual Plane)")
 
-    reference = python_reference(args.model_dir, args.weights, documents, args.threshold)
+    reference = python_reference(args.model_dir, args.weights, documents, args.threshold, use_onnx=args.onnx)
     actual = java_spans(args.model_dir, documents, args.threshold, classpath)
 
     mismatched = []

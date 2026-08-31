@@ -142,7 +142,7 @@ class TokenClassifierFailClosedTest {
     @DisplayName("A partly-known label set is honoured for the labels the model does have")
     void knownLabelsAreStillHonoured() throws Exception {
         try (final var detector = new LocalTokenClassifierDetector(realModelDirectory())) {
-            final var spans = detector.detect("Il sig. Mario Rossi abita a Roma.",
+            final var spans = detector.detect("Il sig. Mario Rossi, residente a Roma, ha firmato il contratto.",
                     List.of("person", "FULLNAME"), "", 0);
             assertEquals(1, spans.size(), spans.toString());
             assertEquals("FULLNAME", spans.get(0).getLabel());

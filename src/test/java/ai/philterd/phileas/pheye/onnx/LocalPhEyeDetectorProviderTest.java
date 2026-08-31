@@ -90,7 +90,8 @@ class LocalPhEyeDetectorProviderTest {
 
         try (final PhEyeDetector detector = new LocalPhEyeDetectorProvider().create(configuration)) {
             assertTrue(detector instanceof LocalTokenClassifierDetector, detector.getClass().getName());
-            final var spans = detector.detect("Il sig. Mario Rossi abita a Roma.", List.of("FULLNAME"), "", 0);
+            final var spans = detector.detect(
+                    "Il sig. Mario Rossi, residente a Roma, ha firmato il contratto.", List.of("FULLNAME"), "", 0);
             assertEquals(1, spans.size(), spans.toString());
             assertEquals("Mario Rossi", spans.get(0).getText());
         }

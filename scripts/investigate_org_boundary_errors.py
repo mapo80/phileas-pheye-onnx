@@ -17,7 +17,10 @@ model's raw (pre-threshold) predictions and the reduced span against the gold sp
         --gold GOLD_DIR/test.jsonl \
         --mmbert-model PACKAGED_TOKEN_CLASSIFICATION_MODEL_DIR \
         --mmbert-weights HF_CHECKPOINT_DIR \
-        --label ORG --threshold 0.92
+        --label ORG --threshold 0.98
+
+For a model that exists only as a quantized ONNX export, with no torch checkpoint, pass
+--mmbert-onnx instead of --mmbert-weights.
 """
 from __future__ import annotations
 
@@ -29,7 +32,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from generate_token_classification_fixture import chunk_text, reduce_spans  # noqa: E402
+from generate_token_classification_fixture import chunk_text, reduce_spans, onnx_scorer  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -37,25 +40,33 @@ def parse_args() -> argparse.Namespace:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--gold", type=Path, required=True)
     parser.add_argument("--mmbert-model", type=Path, required=True)
-    parser.add_argument("--mmbert-weights", type=Path, required=True)
+    parser.add_argument("--mmbert-weights", type=Path, default=None,
+                        help="checkpoint holding the torch weights; required unless --mmbert-onnx is given")
+    parser.add_argument("--mmbert-onnx", action="store_true",
+                        help="drive the packaged model's own ONNX graph directly via onnxruntime")
     parser.add_argument("--label", default="ORG")
-    parser.add_argument("--threshold", type=float, default=0.92)
+    parser.add_argument("--threshold", type=float, default=0.98)
     parser.add_argument("--show", type=int, default=6, help="example rows to print per bucket")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-
-    from transformers import AutoTokenizer, pipeline
-
-    tokenizer = AutoTokenizer.from_pretrained(str(args.mmbert_model))
-    tokenizer.model_input_names = [n for n in tokenizer.model_input_names if n != "token_type_ids"]
-    nlp = pipeline("token-classification", model=str(args.mmbert_weights), tokenizer=tokenizer,
-                   aggregation_strategy="simple", device=-1)
+    if not args.mmbert_onnx and args.mmbert_weights is None:
+        raise SystemExit("--mmbert-weights is required unless --mmbert-onnx is given")
 
     window = json.loads((args.mmbert_model / "token_classification_config.json").read_text())
     max_words, overlap = window["max_words"], window["overlap_words"]
+
+    if args.mmbert_onnx:
+        score_chunk = onnx_scorer(args.mmbert_model, int(window["max_tokens"]))
+    else:
+        from transformers import AutoTokenizer, pipeline
+        tokenizer = AutoTokenizer.from_pretrained(str(args.mmbert_model))
+        tokenizer.model_input_names = [n for n in tokenizer.model_input_names if n != "token_type_ids"]
+        nlp = pipeline("token-classification", model=str(args.mmbert_weights), tokenizer=tokenizer,
+                       aggregation_strategy="simple", device=-1)
+        score_chunk = nlp
 
     documents = [json.loads(line) for line in args.gold.read_text(encoding="utf-8").splitlines() if line.strip()]
 
@@ -77,8 +88,8 @@ def main() -> int:
 
         raw = []
         chunks = chunk_text(text, max_words, overlap)
-        for (_, offset), entities in zip(chunks, nlp([c for c, _ in chunks])):
-            for entity in entities:
+        for chunk, offset in chunks:
+            for entity in score_chunk(chunk):
                 if entity["entity_group"] != args.label:
                     continue
                 raw.append({"label": args.label, "start": int(entity["start"]) + offset,

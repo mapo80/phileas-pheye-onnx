@@ -4,6 +4,33 @@ Notable changes to phileas-pheye-onnx, most recent first.
 
 Full changelogs for each release are available in the [GitHub releases](https://github.com/philterd/phileas-pheye-onnx/releases).
 
+## Version 1.5.0 - August 31, 2026
+
+* **Promotes `rizzo-pii-student-6x384gf` v1.2.0, INT8 dynamic per-channel quantized, as the
+  token-classification model this project measures and documents against**, replacing `6x384g`
+  FP32. The switch was verified, not assumed: this session independently re-ran the calibration
+  protocol already established for `6x384g` (threshold chosen on development, measured once on
+  test, model only) and confirmed the INT8 graph's quality matches its own FP32 baseline (0.8037 vs
+  0.7981 exact F1) — consistent with an [independent, extensively documented
+  evaluation](https://github.com/mapo80/rizzo-pii/releases/tag/student-models-v1.2.0)'s paired
+  bootstrap finding that the two are statistically indistinguishable — while being 3.93× smaller and
+  1.2–1.4× faster than that baseline, and 15.4× fewer parameters / 57.8× smaller on disk than the
+  GLiNER model this README compares it against. The long-input safety net
+  (`maxSequenceTokens`-equivalent sub-token windowing for the token-classification path) was
+  re-verified on the new graph at the same pathological-input sizes GLiNER was tested at, up to a
+  200,000-character adversarial run, with no regression. Parity against the model's own Python
+  reference was re-confirmed exact on 529 ordinary documents and 215 Unicode-hostile ones.
+* `scripts/generate_token_classification_fixture.py`, `scripts/cross_check_against_reference.py`,
+  `scripts/investigate_org_boundary_errors.py` and `scripts/gliner_vs_mmbert_comparison.py` all gain
+  an ONNX-direct mode (`--onnx` / `--mmbert-onnx`), running a packaged model's own graph through
+  onnxruntime instead of a torch checkpoint via `transformers.pipeline`. A model that exists only as
+  a quantized ONNX export, with no loadable torch counterpart, has no other way to be fixtured,
+  cross-checked, or benchmarked by these scripts. Adds `scripts/benchmark_token_classifier_onnx.py`,
+  the token-classification counterpart of the existing GLiNER latency benchmark script, at the same
+  matched protocol.
+* README's "GLiNER vs mmBERT" comparison and `ORG` boundary-mechanism breakdown are re-measured
+  against the newly promoted model throughout.
+
 ## Version 1.4.0 - August 30, 2026
 
 * Adds a second model family: BIO token classifiers, alongside the existing zero-shot GLiNER span

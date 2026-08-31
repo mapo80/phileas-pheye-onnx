@@ -58,7 +58,7 @@ class TokenClassifierLongInputTest {
     }
 
     private static LocalPhEyeOptions options(final LocalPhEyeOptions.LongTextMode mode) {
-        return new LocalPhEyeOptions(0.92, mode, null);
+        return new LocalPhEyeOptions(0.98, mode, null);
     }
 
     @Test
@@ -162,7 +162,7 @@ class TokenClassifierLongInputTest {
     @DisplayName("A caller-supplied overlap is used in place of the model directory's")
     void callerSuppliedOverlapIsUsed() throws Exception {
 
-        final LocalPhEyeOptions wide = new LocalPhEyeOptions(0.92,
+        final LocalPhEyeOptions wide = new LocalPhEyeOptions(0.98,
                 LocalPhEyeOptions.LongTextMode.CHUNK, 60);
 
         try (final var detector = new LocalTokenClassifierDetector(modelDirectory(), wide)) {
@@ -179,7 +179,7 @@ class TokenClassifierLongInputTest {
     void overlapIsClampedBelowTheWindow() throws Exception {
 
         // Honouring this literally would make the stride zero and the loop never advance.
-        final LocalPhEyeOptions absurd = new LocalPhEyeOptions(0.92,
+        final LocalPhEyeOptions absurd = new LocalPhEyeOptions(0.98,
                 LocalPhEyeOptions.LongTextMode.CHUNK, 10_000);
 
         try (final var detector = new LocalTokenClassifierDetector(modelDirectory(), absurd)) {

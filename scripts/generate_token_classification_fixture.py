@@ -20,8 +20,9 @@ from pathlib import Path
 
 WORD = re.compile(r"\S+")
 
-# 0 exercises the decode with nothing filtered out; 0.92 is the value this model was
-# calibrated at on the development split.
+# 0 exercises the decode with nothing filtered out. The second value is only a generic
+# historical default; pass --threshold for the model actually being fixtured, since a
+# calibrated threshold is a property of the model, not of this script.
 THRESHOLDS = (0.0, 0.92)
 
 
@@ -86,26 +87,131 @@ def reduce_spans(spans: list[dict], text: str) -> list[dict]:
     return merged
 
 
+def onnx_scorer(model_dir: Path, max_tokens: int):
+    """A scorer function equivalent to the HuggingFace pipeline, driven by onnxruntime directly.
+
+    For a model that exists only as a quantized ONNX graph -- no loadable PyTorch checkpoint --
+    `transformers.pipeline` cannot be used at all. This reimplements exactly what it does for
+    `aggregation_strategy="simple"` (per-subtoken softmax + argmax, then group consecutive
+    subtokens while the type is unchanged and the tag is not a fresh `B-`, entity score = mean of
+    member probabilities) directly against the graph, matching `LocalTokenClassifierDetector`'s
+    own algorithm. Cross-checked equivalent to the pipeline-based path this replaces: on
+    `rizzo-pii-student-6x384g`, Java driven by `LocalTokenClassifierDetector` matched this
+    onnxruntime-direct reference exactly on the same corpus that it matched the pipeline-based
+    reference on -- so by transitivity this reproduces `aggregation_strategy="simple"` exactly.
+
+    Falls back to the sub-token windowing `LocalTokenClassifierDetector` uses when a chunk's own
+    encoding exceeds `max_tokens` (a chunk holding one pathologically long "word").
+    """
+    import numpy as np
+    import onnxruntime as ort
+    from tokenizers import Tokenizer
+
+    config = json.loads((model_dir / "config.json").read_text(encoding="utf-8"))
+    id2label = [config["id2label"][str(i)] for i in range(len(config["id2label"]))]
+    tokenizer = Tokenizer.from_file(str(model_dir / "tokenizer.json"))
+    onnx_path = model_dir / "onnx" / "model.onnx"
+    if not onnx_path.is_file():
+        onnx_path = model_dir / "model.onnx"
+    session = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
+
+    def softmax(x: "np.ndarray") -> "np.ndarray":
+        x = x - x.max(axis=-1, keepdims=True)
+        e = np.exp(x)
+        return e / e.sum(axis=-1, keepdims=True)
+
+    def score_sub_window(ids: "np.ndarray", encoding, from_: int, to: int) -> list[dict]:
+        sub_ids = ids[from_:to]
+        mask = np.ones_like(sub_ids)
+        logits = session.run(["logits"], {
+            "input_ids": sub_ids.reshape(1, -1),
+            "attention_mask": mask.reshape(1, -1),
+        })[0][0]
+        probabilities = softmax(logits)
+
+        entities = []
+        open_type = open_start = open_end = None
+        open_total = 0.0
+        open_count = 0
+        for t in range(to - from_):
+            absolute = from_ + t
+            if encoding.special_tokens_mask[absolute] == 1:
+                continue
+            char_span = encoding.offsets[absolute]
+            if char_span is None or char_span[0] < 0:
+                continue
+            best = int(probabilities[t].argmax())
+            probability = float(probabilities[t][best])
+            label = id2label[best]
+            entity_type = "O" if label == "O" else label[2:]
+            continues = (entity_type == open_type) and not label.startswith("B-")
+            if open_type is not None and not continues:
+                if open_type != "O":
+                    entities.append({"entity_group": open_type, "start": open_start, "end": open_end,
+                                     "score": open_total / open_count})
+                open_type = None
+            if open_type is None:
+                open_type, open_start, open_total, open_count = entity_type, char_span[0], 0.0, 0
+            open_end = char_span[1]
+            open_total += probability
+            open_count += 1
+        if open_type is not None and open_type != "O":
+            entities.append({"entity_group": open_type, "start": open_start, "end": open_end,
+                             "score": open_total / open_count})
+        return entities
+
+    def score(chunk: str) -> list[dict]:
+        encoding = tokenizer.encode(chunk)
+        ids = np.array(encoding.ids, dtype=np.int64)
+        length = len(ids)
+        if length <= max_tokens:
+            return score_sub_window(ids, encoding, 0, length)
+        entities = []
+        stride = max(max_tokens - max(max_tokens // 8, 1), 1)
+        for start in range(0, length, stride):
+            end = min(start + max_tokens, length)
+            entities.extend(score_sub_window(ids, encoding, start, end))
+            if end == length:
+                break
+        return entities
+
+    return score
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--model-dir", type=Path, required=True)
     parser.add_argument("--weights", type=Path, default=None,
-                        help="checkpoint holding the torch weights; defaults to --model-dir")
+                        help="checkpoint holding the torch weights; defaults to --model-dir. "
+                             "Mutually exclusive with --onnx.")
+    parser.add_argument("--onnx", action="store_true",
+                        help="drive the model directory's own ONNX graph directly via onnxruntime "
+                             "instead of a torch checkpoint -- the only option for a model that "
+                             "exists solely as a quantized ONNX export.")
     parser.add_argument("--texts", type=Path, required=True, help="JSON list of {id, text}")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--threshold", type=float, action="append", dest="thresholds", default=None,
+                        help="repeatable; overrides the default (0.0, 0.92)")
     args = parser.parse_args()
 
     window = json.loads((args.model_dir / "token_classification_config.json").read_text(encoding="utf-8"))
     max_words, overlap = int(window["max_words"]), int(window["overlap_words"])
+    thresholds = tuple(args.thresholds) if args.thresholds else THRESHOLDS
 
-    from transformers import AutoTokenizer, pipeline
+    if args.onnx:
+        if args.weights is not None:
+            raise SystemExit("--weights and --onnx are mutually exclusive")
+        score = onnx_scorer(args.model_dir, int(window["max_tokens"]))
+    else:
+        from transformers import AutoTokenizer, pipeline
 
-    weights = args.weights or args.model_dir
-    tokenizer = AutoTokenizer.from_pretrained(str(args.model_dir))
-    tokenizer.model_input_names = [n for n in tokenizer.model_input_names if n != "token_type_ids"]
-    nlp = pipeline("token-classification", model=str(weights), tokenizer=tokenizer,
-                   aggregation_strategy="simple", device=-1)
+        weights = args.weights or args.model_dir
+        tokenizer = AutoTokenizer.from_pretrained(str(args.model_dir))
+        tokenizer.model_input_names = [n for n in tokenizer.model_input_names if n != "token_type_ids"]
+        nlp = pipeline("token-classification", model=str(weights), tokenizer=tokenizer,
+                       aggregation_strategy="simple", device=-1)
+        score = lambda chunk: nlp(chunk)  # noqa: E731
 
     documents = json.loads(args.texts.read_text(encoding="utf-8"))
     results = []
@@ -113,18 +219,14 @@ def main() -> int:
         text = document["text"]
         chunks = chunk_text(text, max_words, overlap)
         raw = []
-        if chunks:
-            outputs = nlp([chunk for chunk, _ in chunks])
-            if isinstance(outputs, dict):
-                outputs = [outputs]
-            for (_, offset), entities in zip(chunks, outputs):
-                for entity in entities:
-                    raw.append({
-                        "label": entity["entity_group"],
-                        "start": int(entity["start"]) + offset,
-                        "end": int(entity["end"]) + offset,
-                        "score": round(float(entity["score"]), 6),
-                    })
+        for chunk, offset in chunks:
+            for entity in score(chunk):
+                raw.append({
+                    "label": entity["entity_group"],
+                    "start": int(entity["start"]) + offset,
+                    "end": int(entity["end"]) + offset,
+                    "score": round(float(entity["score"]), 6),
+                })
         results.append({
             "id": document["id"],
             "text": text,
@@ -134,7 +236,7 @@ def main() -> int:
             "by_threshold": {
                 f"{threshold:g}": reduce_spans(
                     [s for s in raw if s["score"] >= threshold], text)
-                for threshold in THRESHOLDS
+                for threshold in thresholds
             },
         })
 
@@ -144,7 +246,7 @@ def main() -> int:
                  "scripts/generate_token_classification_fixture.py.",
         "model": args.model_dir.name,
         "window": {"max_words": max_words, "overlap_words": overlap},
-        "thresholds": [f"{t:g}" for t in THRESHOLDS],
+        "thresholds": [f"{t:g}" for t in thresholds],
         "documents": results,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     total = sum(len(d["by_threshold"]["0"]) for d in results)

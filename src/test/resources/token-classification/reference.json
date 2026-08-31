@@ -1,13 +1,13 @@
 {
   "_note": "Reference output of the Python pipeline. Regenerate with scripts/generate_token_classification_fixture.py.",
-  "model": "rizzo-pii-student-6x384g-v1.2.0",
+  "model": "rizzo-pii-student-6x384gf-v1.2.0-int8",
   "window": {
     "max_words": 120,
     "overlap_words": 20
   },
   "thresholds": [
     "0",
-    "0.92"
+    "0.98"
   ],
   "documents": [
     {
@@ -62,7 +62,7 @@
           "label": "PROVINCE",
           "start": 100,
           "end": 102,
-          "score": 0.999234
+          "score": 0.998404
         },
         {
           "label": "CF",
@@ -74,7 +74,7 @@
           "label": "AMOUNT",
           "start": 148,
           "end": 163,
-          "score": 0.999988
+          "score": 0.999985
         },
         {
           "label": "IBAN",
@@ -149,7 +149,7 @@
             "label": "PROVINCE",
             "start": 100,
             "end": 102,
-            "score": 0.999234
+            "score": 0.998404
           },
           {
             "label": "CF",
@@ -161,7 +161,7 @@
             "label": "AMOUNT",
             "start": 149,
             "end": 163,
-            "score": 0.999988
+            "score": 0.999985
           },
           {
             "label": "IBAN",
@@ -188,7 +188,7 @@
             "score": 1.0
           }
         ],
-        "0.92": [
+        "0.98": [
           {
             "label": "DATE",
             "start": 10,
@@ -235,7 +235,7 @@
             "label": "PROVINCE",
             "start": 100,
             "end": 102,
-            "score": 0.999234
+            "score": 0.998404
           },
           {
             "label": "CF",
@@ -247,7 +247,7 @@
             "label": "AMOUNT",
             "start": 149,
             "end": 163,
-            "score": 0.999988
+            "score": 0.999985
           },
           {
             "label": "IBAN",
@@ -286,19 +286,19 @@
           "label": "FULLNAME",
           "start": 10,
           "end": 27,
-          "score": 0.995911
+          "score": 0.99993
         },
         {
           "label": "STREET",
           "start": 43,
           "end": 64,
-          "score": 0.999991
+          "score": 0.999998
         },
         {
           "label": "BUILDINGNUM",
           "start": 64,
           "end": 66,
-          "score": 0.999997
+          "score": 1.0
         },
         {
           "label": "ZIPCODE",
@@ -316,19 +316,19 @@
           "label": "PROVINCE",
           "start": 82,
           "end": 84,
-          "score": 0.999606
+          "score": 0.999929
         },
         {
           "label": "DOCID",
           "start": 114,
           "end": 124,
-          "score": 0.999999
+          "score": 0.999998
         },
         {
           "label": "ORG",
           "start": 149,
           "end": 180,
-          "score": 0.999868
+          "score": 0.999707
         },
         {
           "label": "PIVA",
@@ -340,7 +340,7 @@
           "label": "EMAIL",
           "start": 217,
           "end": 254,
-          "score": 0.999998
+          "score": 0.999997
         },
         {
           "label": "TELEPHONENUM",
@@ -355,19 +355,19 @@
             "label": "FULLNAME",
             "start": 11,
             "end": 27,
-            "score": 0.995911
+            "score": 0.99993
           },
           {
             "label": "STREET",
             "start": 44,
             "end": 64,
-            "score": 0.999991
+            "score": 0.999998
           },
           {
             "label": "BUILDINGNUM",
             "start": 65,
             "end": 66,
-            "score": 0.999997
+            "score": 1.0
           },
           {
             "label": "ZIPCODE",
@@ -385,19 +385,19 @@
             "label": "PROVINCE",
             "start": 82,
             "end": 84,
-            "score": 0.999606
+            "score": 0.999929
           },
           {
             "label": "DOCID",
             "start": 115,
             "end": 124,
-            "score": 0.999999
+            "score": 0.999998
           },
           {
             "label": "ORG",
             "start": 150,
             "end": 180,
-            "score": 0.999868
+            "score": 0.999707
           },
           {
             "label": "PIVA",
@@ -409,7 +409,7 @@
             "label": "EMAIL",
             "start": 218,
             "end": 254,
-            "score": 0.999998
+            "score": 0.999997
           },
           {
             "label": "TELEPHONENUM",
@@ -418,24 +418,24 @@
             "score": 1.0
           }
         ],
-        "0.92": [
+        "0.98": [
           {
             "label": "FULLNAME",
             "start": 11,
             "end": 27,
-            "score": 0.995911
+            "score": 0.99993
           },
           {
             "label": "STREET",
             "start": 44,
             "end": 64,
-            "score": 0.999991
+            "score": 0.999998
           },
           {
             "label": "BUILDINGNUM",
             "start": 65,
             "end": 66,
-            "score": 0.999997
+            "score": 1.0
           },
           {
             "label": "ZIPCODE",
@@ -453,19 +453,19 @@
             "label": "PROVINCE",
             "start": 82,
             "end": 84,
-            "score": 0.999606
+            "score": 0.999929
           },
           {
             "label": "DOCID",
             "start": 115,
             "end": 124,
-            "score": 0.999999
+            "score": 0.999998
           },
           {
             "label": "ORG",
             "start": 150,
             "end": 180,
-            "score": 0.999868
+            "score": 0.999707
           },
           {
             "label": "PIVA",
@@ -477,7 +477,7 @@
             "label": "EMAIL",
             "start": 218,
             "end": 254,
-            "score": 0.999998
+            "score": 0.999997
           },
           {
             "label": "TELEPHONENUM",
@@ -496,7 +496,7 @@
       "raw": [],
       "by_threshold": {
         "0": [],
-        "0.92": []
+        "0.98": []
       }
     },
     {
@@ -507,7 +507,7 @@
       "raw": [],
       "by_threshold": {
         "0": [],
-        "0.92": []
+        "0.98": []
       }
     },
     {
@@ -518,7 +518,7 @@
       "raw": [],
       "by_threshold": {
         "0": [],
-        "0.92": []
+        "0.98": []
       }
     },
     {
@@ -531,7 +531,7 @@
           "label": "FULLNAME",
           "start": 0,
           "end": 11,
-          "score": 0.970536
+          "score": 0.996146
         }
       ],
       "by_threshold": {
@@ -540,15 +540,15 @@
             "label": "FULLNAME",
             "start": 0,
             "end": 11,
-            "score": 0.970536
+            "score": 0.996146
           }
         ],
-        "0.92": [
+        "0.98": [
           {
             "label": "FULLNAME",
             "start": 0,
             "end": 11,
-            "score": 0.970536
+            "score": 0.996146
           }
         ]
       }
@@ -563,7 +563,7 @@
           "label": "CREDITCARDNUMBER",
           "start": 19,
           "end": 39,
-          "score": 0.999975
+          "score": 0.999969
         },
         {
           "label": "DATE",
@@ -575,13 +575,13 @@
           "label": "ORG",
           "start": 152,
           "end": 178,
-          "score": 0.993234
+          "score": 0.967775
         },
         {
           "label": "CREDITCARDNUMBER",
           "start": 200,
           "end": 220,
-          "score": 0.999989
+          "score": 0.999979
         },
         {
           "label": "DATE",
@@ -593,13 +593,13 @@
           "label": "ORG",
           "start": 333,
           "end": 359,
-          "score": 0.994617
+          "score": 0.983538
         },
         {
           "label": "CREDITCARDNUMBER",
           "start": 381,
           "end": 401,
-          "score": 0.999992
+          "score": 0.999983
         },
         {
           "label": "DATE",
@@ -611,13 +611,13 @@
           "label": "ORG",
           "start": 514,
           "end": 540,
-          "score": 0.993589
+          "score": 0.994781
         },
         {
           "label": "AMOUNT",
           "start": 558,
           "end": 573,
-          "score": 0.999968
+          "score": 0.9998
         },
         {
           "label": "IBAN",
@@ -629,7 +629,7 @@
           "label": "CITY",
           "start": 657,
           "end": 665,
-          "score": 0.997117
+          "score": 0.999195
         },
         {
           "label": "DATE",
@@ -641,7 +641,7 @@
           "label": "ORG",
           "start": 703,
           "end": 728,
-          "score": 0.999965
+          "score": 0.999964
         },
         {
           "label": "STREET",
@@ -665,25 +665,25 @@
           "label": "CITY",
           "start": 767,
           "end": 774,
-          "score": 0.999993
+          "score": 0.99999
         },
         {
           "label": "CITY",
           "start": 657,
           "end": 665,
-          "score": 0.980178
+          "score": 0.996469
         },
         {
           "label": "DATE",
           "start": 677,
           "end": 688,
-          "score": 0.999998
+          "score": 0.999999
         },
         {
           "label": "ORG",
           "start": 703,
           "end": 728,
-          "score": 0.999939
+          "score": 0.999926
         },
         {
           "label": "STREET",
@@ -713,7 +713,7 @@
           "label": "PROVINCE",
           "start": 776,
           "end": 778,
-          "score": 0.999733
+          "score": 0.999537
         },
         {
           "label": "PIVA",
@@ -725,13 +725,13 @@
           "label": "FULLNAME",
           "start": 836,
           "end": 851,
-          "score": 0.999998
+          "score": 1.0
         },
         {
           "label": "CREDITCARDNUMBER",
           "start": 873,
           "end": 893,
-          "score": 0.999984
+          "score": 0.999993
         },
         {
           "label": "DATE",
@@ -743,7 +743,7 @@
           "label": "ORG",
           "start": 1006,
           "end": 1032,
-          "score": 0.997472
+          "score": 0.994411
         }
       ],
       "by_threshold": {
@@ -752,7 +752,7 @@
             "label": "CREDITCARDNUMBER",
             "start": 20,
             "end": 39,
-            "score": 0.999975
+            "score": 0.999969
           },
           {
             "label": "DATE",
@@ -764,13 +764,13 @@
             "label": "ORG",
             "start": 153,
             "end": 178,
-            "score": 0.993234
+            "score": 0.967775
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 201,
             "end": 220,
-            "score": 0.999989
+            "score": 0.999979
           },
           {
             "label": "DATE",
@@ -782,13 +782,13 @@
             "label": "ORG",
             "start": 334,
             "end": 359,
-            "score": 0.994617
+            "score": 0.983538
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 382,
             "end": 401,
-            "score": 0.999992
+            "score": 0.999983
           },
           {
             "label": "DATE",
@@ -800,13 +800,13 @@
             "label": "ORG",
             "start": 515,
             "end": 540,
-            "score": 0.993589
+            "score": 0.994781
           },
           {
             "label": "AMOUNT",
             "start": 559,
             "end": 573,
-            "score": 0.999968
+            "score": 0.9998
           },
           {
             "label": "IBAN",
@@ -818,7 +818,7 @@
             "label": "CITY",
             "start": 658,
             "end": 665,
-            "score": 0.997117
+            "score": 0.999195
           },
           {
             "label": "DATE",
@@ -830,7 +830,7 @@
             "label": "ORG",
             "start": 704,
             "end": 728,
-            "score": 0.999965
+            "score": 0.999964
           },
           {
             "label": "STREET",
@@ -860,7 +860,7 @@
             "label": "PROVINCE",
             "start": 776,
             "end": 778,
-            "score": 0.999733
+            "score": 0.999537
           },
           {
             "label": "PIVA",
@@ -872,13 +872,13 @@
             "label": "FULLNAME",
             "start": 837,
             "end": 851,
-            "score": 0.999998
+            "score": 1.0
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 874,
             "end": 893,
-            "score": 0.999984
+            "score": 0.999993
           },
           {
             "label": "DATE",
@@ -890,15 +890,15 @@
             "label": "ORG",
             "start": 1007,
             "end": 1032,
-            "score": 0.997472
+            "score": 0.994411
           }
         ],
-        "0.92": [
+        "0.98": [
           {
             "label": "CREDITCARDNUMBER",
             "start": 20,
             "end": 39,
-            "score": 0.999975
+            "score": 0.999969
           },
           {
             "label": "DATE",
@@ -907,16 +907,10 @@
             "score": 1.0
           },
           {
-            "label": "ORG",
-            "start": 153,
-            "end": 178,
-            "score": 0.993234
-          },
-          {
             "label": "CREDITCARDNUMBER",
             "start": 201,
             "end": 220,
-            "score": 0.999989
+            "score": 0.999979
           },
           {
             "label": "DATE",
@@ -928,13 +922,13 @@
             "label": "ORG",
             "start": 334,
             "end": 359,
-            "score": 0.994617
+            "score": 0.983538
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 382,
             "end": 401,
-            "score": 0.999992
+            "score": 0.999983
           },
           {
             "label": "DATE",
@@ -946,13 +940,13 @@
             "label": "ORG",
             "start": 515,
             "end": 540,
-            "score": 0.993589
+            "score": 0.994781
           },
           {
             "label": "AMOUNT",
             "start": 559,
             "end": 573,
-            "score": 0.999968
+            "score": 0.9998
           },
           {
             "label": "IBAN",
@@ -964,7 +958,7 @@
             "label": "CITY",
             "start": 658,
             "end": 665,
-            "score": 0.997117
+            "score": 0.999195
           },
           {
             "label": "DATE",
@@ -976,7 +970,7 @@
             "label": "ORG",
             "start": 704,
             "end": 728,
-            "score": 0.999965
+            "score": 0.999964
           },
           {
             "label": "STREET",
@@ -1006,7 +1000,7 @@
             "label": "PROVINCE",
             "start": 776,
             "end": 778,
-            "score": 0.999733
+            "score": 0.999537
           },
           {
             "label": "PIVA",
@@ -1018,13 +1012,13 @@
             "label": "FULLNAME",
             "start": 837,
             "end": 851,
-            "score": 0.999998
+            "score": 1.0
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 874,
             "end": 893,
-            "score": 0.999984
+            "score": 0.999993
           },
           {
             "label": "DATE",
@@ -1036,7 +1030,7 @@
             "label": "ORG",
             "start": 1007,
             "end": 1032,
-            "score": 0.997472
+            "score": 0.994411
           }
         ]
       }
@@ -1063,13 +1057,13 @@
           "label": "DOCID",
           "start": 102,
           "end": 116,
-          "score": 0.99982
+          "score": 0.998545
         },
         {
           "label": "CATASTO",
           "start": 157,
           "end": 160,
-          "score": 1.0
+          "score": 0.999999
         },
         {
           "label": "CATASTO",
@@ -1081,13 +1075,13 @@
           "label": "CATASTO",
           "start": 188,
           "end": 190,
-          "score": 0.999994
+          "score": 0.999997
         },
         {
           "label": "FULLNAME",
           "start": 206,
           "end": 233,
-          "score": 1.0
+          "score": 0.999999
         },
         {
           "label": "DATE",
@@ -1129,7 +1123,7 @@
           "label": "PROVINCE",
           "start": 306,
           "end": 308,
-          "score": 0.999931
+          "score": 0.999951
         },
         {
           "label": "FULLNAME",
@@ -1141,13 +1135,13 @@
           "label": "CITY",
           "start": 363,
           "end": 368,
-          "score": 0.999396
+          "score": 0.99964
         },
         {
           "label": "DOCID",
           "start": 433,
           "end": 443,
-          "score": 0.999998
+          "score": 0.999999
         },
         {
           "label": "DATE",
@@ -1159,31 +1153,31 @@
           "label": "TIME",
           "start": 504,
           "end": 510,
-          "score": 0.996146
+          "score": 0.961937
         },
         {
           "label": "BUILDINGNUM",
           "start": 524,
           "end": 527,
-          "score": 0.953877
+          "score": 0.991147
         },
         {
           "label": "STREET",
           "start": 530,
           "end": 557,
-          "score": 0.98075
+          "score": 0.922393
         },
         {
           "label": "BUILDINGNUM",
           "start": 557,
           "end": 561,
-          "score": 0.999962
+          "score": 0.999967
         },
         {
           "label": "FULLNAME",
           "start": 573,
           "end": 594,
-          "score": 0.999999
+          "score": 1.0
         },
         {
           "label": "CF",
@@ -1195,7 +1189,7 @@
           "label": "DOCID",
           "start": 666,
           "end": 680,
-          "score": 0.999785
+          "score": 0.99876
         },
         {
           "label": "CATASTO",
@@ -1225,49 +1219,43 @@
           "label": "FULLNAME",
           "start": 804,
           "end": 813,
-          "score": 0.999779
+          "score": 0.998679
         },
         {
           "label": "CATASTO",
           "start": 721,
           "end": 724,
-          "score": 0.999996
+          "score": 0.999962
         },
         {
           "label": "CATASTO",
           "start": 736,
           "end": 740,
-          "score": 0.999996
+          "score": 0.999986
         },
         {
           "label": "CATASTO",
           "start": 752,
           "end": 754,
-          "score": 0.999905
+          "score": 0.999902
         },
         {
           "label": "TARGA",
           "start": 775,
           "end": 785,
-          "score": 0.999999
+          "score": 1.0
         },
         {
           "label": "FULLNAME",
           "start": 804,
           "end": 813,
-          "score": 0.999708
+          "score": 0.998834
         },
         {
           "label": "IBAN",
           "start": 848,
-          "end": 849,
-          "score": 0.670087
-        },
-        {
-          "label": "DOCID",
-          "start": 849,
           "end": 858,
-          "score": 0.803956
+          "score": 0.880757
         },
         {
           "label": "DATE",
@@ -1285,31 +1273,25 @@
           "label": "FULLNAME",
           "start": 927,
           "end": 936,
-          "score": 0.999715
+          "score": 0.998033
         },
         {
           "label": "IBAN",
           "start": 971,
-          "end": 972,
-          "score": 0.958517
+          "end": 974,
+          "score": 0.786277
         },
         {
           "label": "DOCID",
-          "start": 972,
-          "end": 979,
-          "score": 0.726311
+          "start": 974,
+          "end": 976,
+          "score": 0.619266
         },
         {
           "label": "IBAN",
-          "start": 979,
-          "end": 980,
-          "score": 0.627931
-        },
-        {
-          "label": "DOCID",
-          "start": 980,
+          "start": 976,
           "end": 981,
-          "score": 0.514063
+          "score": 0.771111
         },
         {
           "label": "DATE",
@@ -1321,7 +1303,7 @@
           "label": "EMAIL",
           "start": 1052,
           "end": 1081,
-          "score": 0.999995
+          "score": 0.999988
         },
         {
           "label": "TELEPHONENUM",
@@ -1339,7 +1321,7 @@
           "label": "ORG",
           "start": 1154,
           "end": 1179,
-          "score": 0.999972
+          "score": 0.999989
         },
         {
           "label": "STREET",
@@ -1369,7 +1351,7 @@
           "label": "PROVINCE",
           "start": 1227,
           "end": 1229,
-          "score": 0.99988
+          "score": 0.999762
         },
         {
           "label": "PIVA",
@@ -1387,7 +1369,7 @@
           "label": "AMOUNT",
           "start": 1320,
           "end": 1335,
-          "score": 0.999999
+          "score": 0.999997
         },
         {
           "label": "IBAN",
@@ -1399,19 +1381,19 @@
           "label": "CITY",
           "start": 1419,
           "end": 1427,
-          "score": 0.999021
+          "score": 0.999817
         },
         {
           "label": "DATE",
           "start": 1439,
           "end": 1450,
-          "score": 1.0
+          "score": 0.999997
         },
         {
           "label": "FULLNAME",
           "start": 1462,
           "end": 1483,
-          "score": 0.999999
+          "score": 1.0
         },
         {
           "label": "CF",
@@ -1423,25 +1405,25 @@
           "label": "DOCID",
           "start": 1555,
           "end": 1569,
-          "score": 0.999444
+          "score": 0.999622
         },
         {
           "label": "CITY",
           "start": 1419,
           "end": 1427,
-          "score": 0.983731
+          "score": 0.998632
         },
         {
           "label": "DATE",
           "start": 1439,
           "end": 1450,
-          "score": 0.999999
+          "score": 1.0
         },
         {
           "label": "FULLNAME",
           "start": 1462,
           "end": 1483,
-          "score": 0.999989
+          "score": 0.999999
         },
         {
           "label": "CF",
@@ -1453,31 +1435,31 @@
           "label": "DOCID",
           "start": 1555,
           "end": 1569,
-          "score": 0.999749
+          "score": 0.998693
         },
         {
           "label": "CATASTO",
           "start": 1610,
           "end": 1613,
-          "score": 0.999983
+          "score": 0.999998
         },
         {
           "label": "CATASTO",
           "start": 1625,
           "end": 1629,
-          "score": 0.999991
+          "score": 0.999999
         },
         {
           "label": "CATASTO",
           "start": 1641,
           "end": 1643,
-          "score": 0.999615
+          "score": 0.999983
         },
         {
           "label": "CREDITCARDNUMBER",
           "start": 1665,
           "end": 1685,
-          "score": 0.999995
+          "score": 0.99999
         },
         {
           "label": "DATE",
@@ -1489,13 +1471,13 @@
           "label": "ORG",
           "start": 1798,
           "end": 1824,
-          "score": 0.995116
+          "score": 0.992307
         },
         {
           "label": "DOCID",
           "start": 1889,
           "end": 1899,
-          "score": 0.999997
+          "score": 0.999998
         },
         {
           "label": "DATE",
@@ -1507,31 +1489,31 @@
           "label": "TIME",
           "start": 1960,
           "end": 1966,
-          "score": 0.99345
+          "score": 0.960543
         },
         {
           "label": "BUILDINGNUM",
           "start": 1980,
           "end": 1983,
-          "score": 0.910022
+          "score": 0.946692
         },
         {
           "label": "STREET",
           "start": 1986,
           "end": 2013,
-          "score": 0.997627
+          "score": 0.974313
         },
         {
           "label": "BUILDINGNUM",
           "start": 2013,
           "end": 2017,
-          "score": 0.999901
+          "score": 0.999912
         },
         {
           "label": "AMOUNT",
           "start": 2035,
           "end": 2050,
-          "score": 0.999997
+          "score": 0.999992
         },
         {
           "label": "IBAN",
@@ -1543,7 +1525,7 @@
           "label": "CITY",
           "start": 2134,
           "end": 2142,
-          "score": 0.996732
+          "score": 0.999563
         },
         {
           "label": "DATE",
@@ -1555,7 +1537,7 @@
           "label": "CREDITCARDNUMBER",
           "start": 2187,
           "end": 2207,
-          "score": 0.999991
+          "score": 0.999994
         },
         {
           "label": "IBAN",
@@ -1567,7 +1549,7 @@
           "label": "CITY",
           "start": 2134,
           "end": 2142,
-          "score": 0.993997
+          "score": 0.999293
         },
         {
           "label": "DATE",
@@ -1579,7 +1561,7 @@
           "label": "CREDITCARDNUMBER",
           "start": 2187,
           "end": 2207,
-          "score": 0.999995
+          "score": 0.999996
         },
         {
           "label": "DATE",
@@ -1591,13 +1573,13 @@
           "label": "ORG",
           "start": 2320,
           "end": 2346,
-          "score": 0.996623
+          "score": 0.975526
         },
         {
           "label": "DOCID",
           "start": 2411,
           "end": 2421,
-          "score": 0.999998
+          "score": 0.999999
         },
         {
           "label": "DATE",
@@ -1609,31 +1591,31 @@
           "label": "TIME",
           "start": 2482,
           "end": 2488,
-          "score": 0.995118
+          "score": 0.990071
         },
         {
           "label": "BUILDINGNUM",
           "start": 2502,
           "end": 2505,
-          "score": 0.944601
+          "score": 0.958396
         },
         {
           "label": "STREET",
           "start": 2508,
           "end": 2535,
-          "score": 0.980546
+          "score": 0.999722
         },
         {
           "label": "BUILDINGNUM",
           "start": 2535,
           "end": 2539,
-          "score": 0.999935
+          "score": 0.999894
         },
         {
           "label": "FULLNAME",
           "start": 2555,
           "end": 2582,
-          "score": 0.999999
+          "score": 1.0
         },
         {
           "label": "DATE",
@@ -1645,7 +1627,7 @@
           "label": "CITY",
           "start": 2604,
           "end": 2611,
-          "score": 0.999999
+          "score": 1.0
         },
         {
           "label": "STREET",
@@ -1675,7 +1657,7 @@
           "label": "PROVINCE",
           "start": 2655,
           "end": 2657,
-          "score": 0.999906
+          "score": 0.999922
         },
         {
           "label": "FULLNAME",
@@ -1687,7 +1669,7 @@
           "label": "CITY",
           "start": 2712,
           "end": 2717,
-          "score": 0.99966
+          "score": 0.999817
         },
         {
           "label": "FULLNAME",
@@ -1735,19 +1717,19 @@
           "label": "PROVINCE",
           "start": 2833,
           "end": 2835,
-          "score": 0.999889
+          "score": 0.999927
         },
         {
           "label": "FULLNAME",
           "start": 2864,
           "end": 2871,
-          "score": 0.999964
+          "score": 0.999907
         },
         {
           "label": "FULLNAME",
           "start": 2734,
           "end": 2760,
-          "score": 0.999996
+          "score": 0.999992
         },
         {
           "label": "DATE",
@@ -1789,7 +1771,7 @@
           "label": "PROVINCE",
           "start": 2833,
           "end": 2835,
-          "score": 0.99985
+          "score": 0.999946
         },
         {
           "label": "FULLNAME",
@@ -1801,13 +1783,13 @@
           "label": "CITY",
           "start": 2890,
           "end": 2895,
-          "score": 0.999305
+          "score": 0.999923
         },
         {
           "label": "CREDITCARDNUMBER",
           "start": 2917,
           "end": 2937,
-          "score": 0.999997
+          "score": 0.999994
         },
         {
           "label": "DATE",
@@ -1819,7 +1801,7 @@
           "label": "ORG",
           "start": 3050,
           "end": 3076,
-          "score": 0.996144
+          "score": 0.993441
         },
         {
           "label": "TARGA",
@@ -1831,13 +1813,13 @@
           "label": "FULLNAME",
           "start": 3126,
           "end": 3135,
-          "score": 0.999783
+          "score": 0.999462
         },
         {
           "label": "IBAN",
           "start": 3170,
           "end": 3180,
-          "score": 0.81538
+          "score": 0.983358
         },
         {
           "label": "DATE",
@@ -1849,7 +1831,7 @@
           "label": "DOCID",
           "start": 3264,
           "end": 3274,
-          "score": 0.999998
+          "score": 0.999999
         },
         {
           "label": "DATE",
@@ -1861,25 +1843,25 @@
           "label": "TIME",
           "start": 3335,
           "end": 3341,
-          "score": 0.998094
+          "score": 0.966873
         },
         {
           "label": "BUILDINGNUM",
           "start": 3355,
           "end": 3358,
-          "score": 0.980897
+          "score": 0.993478
         },
         {
           "label": "STREET",
           "start": 3361,
           "end": 3388,
-          "score": 0.998978
+          "score": 0.994994
         },
         {
           "label": "BUILDINGNUM",
           "start": 3388,
           "end": 3392,
-          "score": 0.999954
+          "score": 0.999984
         },
         {
           "label": "TARGA",
@@ -1891,55 +1873,37 @@
           "label": "FULLNAME",
           "start": 3442,
           "end": 3451,
-          "score": 0.999741
+          "score": 0.999381
         },
         {
           "label": "IBAN",
           "start": 3486,
           "end": 3496,
-          "score": 0.963752
+          "score": 0.996849
         },
         {
-          "label": "STREET",
-          "start": 3376,
+          "label": "FULLNAME",
+          "start": 3368,
           "end": 3385,
-          "score": 0.772557
-        },
-        {
-          "label": "BUILDINGNUM",
-          "start": 3388,
-          "end": 3392,
-          "score": 0.685676
+          "score": 0.723015
         },
         {
           "label": "TARGA",
           "start": 3413,
           "end": 3423,
-          "score": 0.999999
+          "score": 0.999998
         },
         {
           "label": "FULLNAME",
           "start": 3442,
           "end": 3451,
-          "score": 0.999293
+          "score": 0.997748
         },
         {
           "label": "IBAN",
           "start": 3486,
-          "end": 3494,
-          "score": 0.690705
-        },
-        {
-          "label": "ID_DOC",
-          "start": 3494,
-          "end": 3495,
-          "score": 0.507037
-        },
-        {
-          "label": "IBAN",
-          "start": 3495,
           "end": 3496,
-          "score": 0.611109
+          "score": 0.958745
         },
         {
           "label": "DATE",
@@ -1951,7 +1915,7 @@
           "label": "EMAIL",
           "start": 3567,
           "end": 3596,
-          "score": 0.999948
+          "score": 0.999758
         },
         {
           "label": "TELEPHONENUM",
@@ -1963,7 +1927,7 @@
           "label": "DATE",
           "start": 3643,
           "end": 3654,
-          "score": 0.999999
+          "score": 1.0
         }
       ],
       "by_threshold": {
@@ -1984,13 +1948,13 @@
             "label": "DOCID",
             "start": 103,
             "end": 116,
-            "score": 0.99982
+            "score": 0.998545
           },
           {
             "label": "CATASTO",
             "start": 158,
             "end": 160,
-            "score": 1.0
+            "score": 0.999999
           },
           {
             "label": "CATASTO",
@@ -2002,13 +1966,13 @@
             "label": "CATASTO",
             "start": 189,
             "end": 190,
-            "score": 0.999994
+            "score": 0.999997
           },
           {
             "label": "FULLNAME",
             "start": 207,
             "end": 233,
-            "score": 1.0
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -2050,7 +2014,7 @@
             "label": "PROVINCE",
             "start": 306,
             "end": 308,
-            "score": 0.999931
+            "score": 0.999951
           },
           {
             "label": "FULLNAME",
@@ -2062,13 +2026,13 @@
             "label": "CITY",
             "start": 364,
             "end": 368,
-            "score": 0.999396
+            "score": 0.99964
           },
           {
             "label": "DOCID",
             "start": 434,
             "end": 443,
-            "score": 0.999998
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -2080,31 +2044,31 @@
             "label": "TIME",
             "start": 505,
             "end": 510,
-            "score": 0.996146
+            "score": 0.961937
           },
           {
             "label": "BUILDINGNUM",
             "start": 525,
             "end": 527,
-            "score": 0.953877
+            "score": 0.991147
           },
           {
             "label": "STREET",
             "start": 531,
             "end": 557,
-            "score": 0.98075
+            "score": 0.922393
           },
           {
             "label": "BUILDINGNUM",
             "start": 558,
             "end": 561,
-            "score": 0.999962
+            "score": 0.999967
           },
           {
             "label": "FULLNAME",
             "start": 574,
             "end": 594,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "CF",
@@ -2116,7 +2080,7 @@
             "label": "DOCID",
             "start": 667,
             "end": 680,
-            "score": 0.999785
+            "score": 0.99876
           },
           {
             "label": "CATASTO",
@@ -2146,13 +2110,13 @@
             "label": "FULLNAME",
             "start": 805,
             "end": 813,
-            "score": 0.999779
+            "score": 0.998834
           },
           {
-            "label": "DOCID",
+            "label": "IBAN",
             "start": 849,
             "end": 858,
-            "score": 0.803956
+            "score": 0.880757
           },
           {
             "label": "DATE",
@@ -2170,13 +2134,13 @@
             "label": "FULLNAME",
             "start": 928,
             "end": 936,
-            "score": 0.999715
+            "score": 0.998033
           },
           {
-            "label": "DOCID",
+            "label": "IBAN",
             "start": 972,
             "end": 981,
-            "score": 0.726311
+            "score": 0.786277
           },
           {
             "label": "DATE",
@@ -2188,7 +2152,7 @@
             "label": "EMAIL",
             "start": 1053,
             "end": 1081,
-            "score": 0.999995
+            "score": 0.999988
           },
           {
             "label": "TELEPHONENUM",
@@ -2206,7 +2170,7 @@
             "label": "ORG",
             "start": 1155,
             "end": 1179,
-            "score": 0.999972
+            "score": 0.999989
           },
           {
             "label": "STREET",
@@ -2236,7 +2200,7 @@
             "label": "PROVINCE",
             "start": 1227,
             "end": 1229,
-            "score": 0.99988
+            "score": 0.999762
           },
           {
             "label": "PIVA",
@@ -2254,7 +2218,7 @@
             "label": "AMOUNT",
             "start": 1321,
             "end": 1335,
-            "score": 0.999999
+            "score": 0.999997
           },
           {
             "label": "IBAN",
@@ -2266,7 +2230,7 @@
             "label": "CITY",
             "start": 1420,
             "end": 1427,
-            "score": 0.999021
+            "score": 0.999817
           },
           {
             "label": "DATE",
@@ -2278,7 +2242,7 @@
             "label": "FULLNAME",
             "start": 1463,
             "end": 1483,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "CF",
@@ -2290,31 +2254,31 @@
             "label": "DOCID",
             "start": 1556,
             "end": 1569,
-            "score": 0.999749
+            "score": 0.999622
           },
           {
             "label": "CATASTO",
             "start": 1611,
             "end": 1613,
-            "score": 0.999983
+            "score": 0.999998
           },
           {
             "label": "CATASTO",
             "start": 1626,
             "end": 1629,
-            "score": 0.999991
+            "score": 0.999999
           },
           {
             "label": "CATASTO",
             "start": 1642,
             "end": 1643,
-            "score": 0.999615
+            "score": 0.999983
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 1666,
             "end": 1685,
-            "score": 0.999995
+            "score": 0.99999
           },
           {
             "label": "DATE",
@@ -2326,13 +2290,13 @@
             "label": "ORG",
             "start": 1799,
             "end": 1824,
-            "score": 0.995116
+            "score": 0.992307
           },
           {
             "label": "DOCID",
             "start": 1890,
             "end": 1899,
-            "score": 0.999997
+            "score": 0.999998
           },
           {
             "label": "DATE",
@@ -2344,31 +2308,31 @@
             "label": "TIME",
             "start": 1961,
             "end": 1966,
-            "score": 0.99345
+            "score": 0.960543
           },
           {
             "label": "BUILDINGNUM",
             "start": 1981,
             "end": 1983,
-            "score": 0.910022
+            "score": 0.946692
           },
           {
             "label": "STREET",
             "start": 1987,
             "end": 2013,
-            "score": 0.997627
+            "score": 0.974313
           },
           {
             "label": "BUILDINGNUM",
             "start": 2014,
             "end": 2017,
-            "score": 0.999901
+            "score": 0.999912
           },
           {
             "label": "AMOUNT",
             "start": 2036,
             "end": 2050,
-            "score": 0.999997
+            "score": 0.999992
           },
           {
             "label": "IBAN",
@@ -2380,7 +2344,7 @@
             "label": "CITY",
             "start": 2135,
             "end": 2142,
-            "score": 0.996732
+            "score": 0.999563
           },
           {
             "label": "DATE",
@@ -2392,7 +2356,7 @@
             "label": "CREDITCARDNUMBER",
             "start": 2188,
             "end": 2207,
-            "score": 0.999995
+            "score": 0.999996
           },
           {
             "label": "DATE",
@@ -2404,13 +2368,13 @@
             "label": "ORG",
             "start": 2321,
             "end": 2346,
-            "score": 0.996623
+            "score": 0.975526
           },
           {
             "label": "DOCID",
             "start": 2412,
             "end": 2421,
-            "score": 0.999998
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -2422,31 +2386,31 @@
             "label": "TIME",
             "start": 2483,
             "end": 2488,
-            "score": 0.995118
+            "score": 0.990071
           },
           {
             "label": "BUILDINGNUM",
             "start": 2503,
             "end": 2505,
-            "score": 0.944601
+            "score": 0.958396
           },
           {
             "label": "STREET",
             "start": 2509,
             "end": 2535,
-            "score": 0.980546
+            "score": 0.999722
           },
           {
             "label": "BUILDINGNUM",
             "start": 2536,
             "end": 2539,
-            "score": 0.999935
+            "score": 0.999894
           },
           {
             "label": "FULLNAME",
             "start": 2556,
             "end": 2582,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "DATE",
@@ -2458,7 +2422,7 @@
             "label": "CITY",
             "start": 2605,
             "end": 2611,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "STREET",
@@ -2488,7 +2452,7 @@
             "label": "PROVINCE",
             "start": 2655,
             "end": 2657,
-            "score": 0.999906
+            "score": 0.999922
           },
           {
             "label": "FULLNAME",
@@ -2500,7 +2464,7 @@
             "label": "CITY",
             "start": 2713,
             "end": 2717,
-            "score": 0.99966
+            "score": 0.999817
           },
           {
             "label": "FULLNAME",
@@ -2548,7 +2512,7 @@
             "label": "PROVINCE",
             "start": 2833,
             "end": 2835,
-            "score": 0.999889
+            "score": 0.999946
           },
           {
             "label": "FULLNAME",
@@ -2560,13 +2524,13 @@
             "label": "CITY",
             "start": 2891,
             "end": 2895,
-            "score": 0.999305
+            "score": 0.999923
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 2918,
             "end": 2937,
-            "score": 0.999997
+            "score": 0.999994
           },
           {
             "label": "DATE",
@@ -2578,7 +2542,7 @@
             "label": "ORG",
             "start": 3051,
             "end": 3076,
-            "score": 0.996144
+            "score": 0.993441
           },
           {
             "label": "TARGA",
@@ -2590,13 +2554,13 @@
             "label": "FULLNAME",
             "start": 3127,
             "end": 3135,
-            "score": 0.999783
+            "score": 0.999462
           },
           {
             "label": "IBAN",
             "start": 3171,
             "end": 3180,
-            "score": 0.81538
+            "score": 0.983358
           },
           {
             "label": "DATE",
@@ -2608,7 +2572,7 @@
             "label": "DOCID",
             "start": 3265,
             "end": 3274,
-            "score": 0.999998
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -2620,25 +2584,25 @@
             "label": "TIME",
             "start": 3336,
             "end": 3341,
-            "score": 0.998094
+            "score": 0.966873
           },
           {
             "label": "BUILDINGNUM",
             "start": 3356,
             "end": 3358,
-            "score": 0.980897
+            "score": 0.993478
           },
           {
             "label": "STREET",
             "start": 3362,
             "end": 3388,
-            "score": 0.998978
+            "score": 0.994994
           },
           {
             "label": "BUILDINGNUM",
             "start": 3389,
             "end": 3392,
-            "score": 0.999954
+            "score": 0.999984
           },
           {
             "label": "TARGA",
@@ -2650,13 +2614,13 @@
             "label": "FULLNAME",
             "start": 3443,
             "end": 3451,
-            "score": 0.999741
+            "score": 0.999381
           },
           {
             "label": "IBAN",
             "start": 3487,
             "end": 3496,
-            "score": 0.963752
+            "score": 0.996849
           },
           {
             "label": "DATE",
@@ -2668,7 +2632,7 @@
             "label": "EMAIL",
             "start": 3568,
             "end": 3596,
-            "score": 0.999948
+            "score": 0.999758
           },
           {
             "label": "TELEPHONENUM",
@@ -2680,10 +2644,10 @@
             "label": "DATE",
             "start": 3644,
             "end": 3654,
-            "score": 0.999999
+            "score": 1.0
           }
         ],
-        "0.92": [
+        "0.98": [
           {
             "label": "FULLNAME",
             "start": 10,
@@ -2700,13 +2664,13 @@
             "label": "DOCID",
             "start": 103,
             "end": 116,
-            "score": 0.99982
+            "score": 0.998545
           },
           {
             "label": "CATASTO",
             "start": 158,
             "end": 160,
-            "score": 1.0
+            "score": 0.999999
           },
           {
             "label": "CATASTO",
@@ -2718,13 +2682,13 @@
             "label": "CATASTO",
             "start": 189,
             "end": 190,
-            "score": 0.999994
+            "score": 0.999997
           },
           {
             "label": "FULLNAME",
             "start": 207,
             "end": 233,
-            "score": 1.0
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -2766,7 +2730,7 @@
             "label": "PROVINCE",
             "start": 306,
             "end": 308,
-            "score": 0.999931
+            "score": 0.999951
           },
           {
             "label": "FULLNAME",
@@ -2778,13 +2742,13 @@
             "label": "CITY",
             "start": 364,
             "end": 368,
-            "score": 0.999396
+            "score": 0.99964
           },
           {
             "label": "DOCID",
             "start": 434,
             "end": 443,
-            "score": 0.999998
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -2793,34 +2757,22 @@
             "score": 1.0
           },
           {
-            "label": "TIME",
-            "start": 505,
-            "end": 510,
-            "score": 0.996146
-          },
-          {
             "label": "BUILDINGNUM",
             "start": 525,
             "end": 527,
-            "score": 0.953877
-          },
-          {
-            "label": "STREET",
-            "start": 531,
-            "end": 557,
-            "score": 0.98075
+            "score": 0.991147
           },
           {
             "label": "BUILDINGNUM",
             "start": 558,
             "end": 561,
-            "score": 0.999962
+            "score": 0.999967
           },
           {
             "label": "FULLNAME",
             "start": 574,
             "end": 594,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "CF",
@@ -2832,7 +2784,7 @@
             "label": "DOCID",
             "start": 667,
             "end": 680,
-            "score": 0.999785
+            "score": 0.99876
           },
           {
             "label": "CATASTO",
@@ -2862,7 +2814,7 @@
             "label": "FULLNAME",
             "start": 805,
             "end": 813,
-            "score": 0.999779
+            "score": 0.998834
           },
           {
             "label": "DATE",
@@ -2880,7 +2832,7 @@
             "label": "FULLNAME",
             "start": 928,
             "end": 936,
-            "score": 0.999715
+            "score": 0.998033
           },
           {
             "label": "DATE",
@@ -2892,7 +2844,7 @@
             "label": "EMAIL",
             "start": 1053,
             "end": 1081,
-            "score": 0.999995
+            "score": 0.999988
           },
           {
             "label": "TELEPHONENUM",
@@ -2910,7 +2862,7 @@
             "label": "ORG",
             "start": 1155,
             "end": 1179,
-            "score": 0.999972
+            "score": 0.999989
           },
           {
             "label": "STREET",
@@ -2940,7 +2892,7 @@
             "label": "PROVINCE",
             "start": 1227,
             "end": 1229,
-            "score": 0.99988
+            "score": 0.999762
           },
           {
             "label": "PIVA",
@@ -2958,7 +2910,7 @@
             "label": "AMOUNT",
             "start": 1321,
             "end": 1335,
-            "score": 0.999999
+            "score": 0.999997
           },
           {
             "label": "IBAN",
@@ -2970,7 +2922,7 @@
             "label": "CITY",
             "start": 1420,
             "end": 1427,
-            "score": 0.999021
+            "score": 0.999817
           },
           {
             "label": "DATE",
@@ -2982,7 +2934,7 @@
             "label": "FULLNAME",
             "start": 1463,
             "end": 1483,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "CF",
@@ -2994,31 +2946,31 @@
             "label": "DOCID",
             "start": 1556,
             "end": 1569,
-            "score": 0.999749
+            "score": 0.999622
           },
           {
             "label": "CATASTO",
             "start": 1611,
             "end": 1613,
-            "score": 0.999983
+            "score": 0.999998
           },
           {
             "label": "CATASTO",
             "start": 1626,
             "end": 1629,
-            "score": 0.999991
+            "score": 0.999999
           },
           {
             "label": "CATASTO",
             "start": 1642,
             "end": 1643,
-            "score": 0.999615
+            "score": 0.999983
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 1666,
             "end": 1685,
-            "score": 0.999995
+            "score": 0.99999
           },
           {
             "label": "DATE",
@@ -3030,13 +2982,13 @@
             "label": "ORG",
             "start": 1799,
             "end": 1824,
-            "score": 0.995116
+            "score": 0.992307
           },
           {
             "label": "DOCID",
             "start": 1890,
             "end": 1899,
-            "score": 0.999997
+            "score": 0.999998
           },
           {
             "label": "DATE",
@@ -3045,28 +2997,16 @@
             "score": 1.0
           },
           {
-            "label": "TIME",
-            "start": 1961,
-            "end": 1966,
-            "score": 0.99345
-          },
-          {
-            "label": "STREET",
-            "start": 1987,
-            "end": 2013,
-            "score": 0.997627
-          },
-          {
             "label": "BUILDINGNUM",
             "start": 2014,
             "end": 2017,
-            "score": 0.999901
+            "score": 0.999912
           },
           {
             "label": "AMOUNT",
             "start": 2036,
             "end": 2050,
-            "score": 0.999997
+            "score": 0.999992
           },
           {
             "label": "IBAN",
@@ -3078,7 +3018,7 @@
             "label": "CITY",
             "start": 2135,
             "end": 2142,
-            "score": 0.996732
+            "score": 0.999563
           },
           {
             "label": "DATE",
@@ -3090,7 +3030,7 @@
             "label": "CREDITCARDNUMBER",
             "start": 2188,
             "end": 2207,
-            "score": 0.999995
+            "score": 0.999996
           },
           {
             "label": "DATE",
@@ -3099,16 +3039,10 @@
             "score": 1.0
           },
           {
-            "label": "ORG",
-            "start": 2321,
-            "end": 2346,
-            "score": 0.996623
-          },
-          {
             "label": "DOCID",
             "start": 2412,
             "end": 2421,
-            "score": 0.999998
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -3120,31 +3054,25 @@
             "label": "TIME",
             "start": 2483,
             "end": 2488,
-            "score": 0.995118
-          },
-          {
-            "label": "BUILDINGNUM",
-            "start": 2503,
-            "end": 2505,
-            "score": 0.944601
+            "score": 0.990071
           },
           {
             "label": "STREET",
             "start": 2509,
             "end": 2535,
-            "score": 0.980546
+            "score": 0.999722
           },
           {
             "label": "BUILDINGNUM",
             "start": 2536,
             "end": 2539,
-            "score": 0.999935
+            "score": 0.999894
           },
           {
             "label": "FULLNAME",
             "start": 2556,
             "end": 2582,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "DATE",
@@ -3156,7 +3084,7 @@
             "label": "CITY",
             "start": 2605,
             "end": 2611,
-            "score": 0.999999
+            "score": 1.0
           },
           {
             "label": "STREET",
@@ -3186,7 +3114,7 @@
             "label": "PROVINCE",
             "start": 2655,
             "end": 2657,
-            "score": 0.999906
+            "score": 0.999922
           },
           {
             "label": "FULLNAME",
@@ -3198,7 +3126,7 @@
             "label": "CITY",
             "start": 2713,
             "end": 2717,
-            "score": 0.99966
+            "score": 0.999817
           },
           {
             "label": "FULLNAME",
@@ -3246,7 +3174,7 @@
             "label": "PROVINCE",
             "start": 2833,
             "end": 2835,
-            "score": 0.999889
+            "score": 0.999946
           },
           {
             "label": "FULLNAME",
@@ -3258,13 +3186,13 @@
             "label": "CITY",
             "start": 2891,
             "end": 2895,
-            "score": 0.999305
+            "score": 0.999923
           },
           {
             "label": "CREDITCARDNUMBER",
             "start": 2918,
             "end": 2937,
-            "score": 0.999997
+            "score": 0.999994
           },
           {
             "label": "DATE",
@@ -3276,7 +3204,7 @@
             "label": "ORG",
             "start": 3051,
             "end": 3076,
-            "score": 0.996144
+            "score": 0.993441
           },
           {
             "label": "TARGA",
@@ -3288,7 +3216,13 @@
             "label": "FULLNAME",
             "start": 3127,
             "end": 3135,
-            "score": 0.999783
+            "score": 0.999462
+          },
+          {
+            "label": "IBAN",
+            "start": 3171,
+            "end": 3180,
+            "score": 0.983358
           },
           {
             "label": "DATE",
@@ -3300,7 +3234,7 @@
             "label": "DOCID",
             "start": 3265,
             "end": 3274,
-            "score": 0.999998
+            "score": 0.999999
           },
           {
             "label": "DATE",
@@ -3309,28 +3243,22 @@
             "score": 1.0
           },
           {
-            "label": "TIME",
-            "start": 3336,
-            "end": 3341,
-            "score": 0.998094
-          },
-          {
             "label": "BUILDINGNUM",
             "start": 3356,
             "end": 3358,
-            "score": 0.980897
+            "score": 0.993478
           },
           {
             "label": "STREET",
             "start": 3362,
             "end": 3388,
-            "score": 0.998978
+            "score": 0.994994
           },
           {
             "label": "BUILDINGNUM",
             "start": 3389,
             "end": 3392,
-            "score": 0.999954
+            "score": 0.999984
           },
           {
             "label": "TARGA",
@@ -3342,13 +3270,13 @@
             "label": "FULLNAME",
             "start": 3443,
             "end": 3451,
-            "score": 0.999741
+            "score": 0.999381
           },
           {
             "label": "IBAN",
             "start": 3487,
             "end": 3496,
-            "score": 0.963752
+            "score": 0.996849
           },
           {
             "label": "DATE",
@@ -3360,7 +3288,7 @@
             "label": "EMAIL",
             "start": 3568,
             "end": 3596,
-            "score": 0.999948
+            "score": 0.999758
           },
           {
             "label": "TELEPHONENUM",
@@ -3372,7 +3300,7 @@
             "label": "DATE",
             "start": 3644,
             "end": 3654,
-            "score": 0.999999
+            "score": 1.0
           }
         ]
       }
@@ -3387,31 +3315,31 @@
           "label": "FULLNAME",
           "start": 833,
           "end": 860,
-          "score": 0.999983
+          "score": 0.999992
         },
         {
           "label": "STREET",
           "start": 871,
           "end": 885,
-          "score": 0.99999
+          "score": 0.999996
         },
         {
           "label": "BUILDINGNUM",
           "start": 885,
           "end": 887,
-          "score": 0.999996
+          "score": 0.999995
         },
         {
           "label": "ZIPCODE",
           "start": 888,
           "end": 894,
-          "score": 0.999998
+          "score": 0.999994
         },
         {
           "label": "CITY",
           "start": 894,
           "end": 901,
-          "score": 0.999963
+          "score": 0.999828
         }
       ],
       "by_threshold": {
@@ -3420,63 +3348,63 @@
             "label": "FULLNAME",
             "start": 834,
             "end": 860,
-            "score": 0.999983
+            "score": 0.999992
           },
           {
             "label": "STREET",
             "start": 872,
             "end": 885,
-            "score": 0.99999
+            "score": 0.999996
           },
           {
             "label": "BUILDINGNUM",
             "start": 886,
             "end": 887,
-            "score": 0.999996
+            "score": 0.999995
           },
           {
             "label": "ZIPCODE",
             "start": 889,
             "end": 894,
-            "score": 0.999998
+            "score": 0.999994
           },
           {
             "label": "CITY",
             "start": 895,
             "end": 901,
-            "score": 0.999963
+            "score": 0.999828
           }
         ],
-        "0.92": [
+        "0.98": [
           {
             "label": "FULLNAME",
             "start": 834,
             "end": 860,
-            "score": 0.999983
+            "score": 0.999992
           },
           {
             "label": "STREET",
             "start": 872,
             "end": 885,
-            "score": 0.99999
+            "score": 0.999996
           },
           {
             "label": "BUILDINGNUM",
             "start": 886,
             "end": 887,
-            "score": 0.999996
+            "score": 0.999995
           },
           {
             "label": "ZIPCODE",
             "start": 889,
             "end": 894,
-            "score": 0.999998
+            "score": 0.999994
           },
           {
             "label": "CITY",
             "start": 895,
             "end": 901,
-            "score": 0.999963
+            "score": 0.999828
           }
         ]
       }

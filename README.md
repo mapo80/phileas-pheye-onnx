@@ -72,11 +72,21 @@ out rather than glossed over.
 module's `LocalPhEyeDetector` at the exact configuration a prior evaluation in this workspace froze
 for production: labels `person`, `company`, `postal address`; decode threshold 0.60 globally, 0.40
 for `person`; `FLAT_GREEDY`; `CHUNK`. mmBERT: this repository's own distilled student,
-`rizzo-pii-student-6x384g` v1.2.0 (ModernBERT backbone, ~6 of the teacher's layers selected globally,
-32.77M parameters, 131.2 MB FP32 ONNX), fixed 45-class BIO taxonomy (22 entity types), run through
-`LocalTokenClassifierDetector` at its own calibrated threshold, 0.92.
+`rizzo-pii-student-6x384gf` v1.2.0, **INT8 dynamic, per-channel** (ModernBERT backbone, 6 of the
+teacher's layers selected globally, factorized rank-128 embedding, 18.75M parameters, 19.1 MB ONNX),
+fixed 45-class BIO taxonomy (22 entity types), run through `LocalTokenClassifierDetector` at its own
+calibrated threshold, 0.98.
 
-These are not two sizes of the same thing: GLiNER is 8.8× the parameters and 8.4× the ONNX size of
+The INT8 graph is the one actually shipped, not a hypothetical: [an independent, extensively
+documented evaluation](https://github.com/mapo80/rizzo-pii/releases/tag/student-models-v1.2.0) found
+it statistically indistinguishable from its own FP32 baseline on exact entity F1 (paired bootstrap
+95% CI `[-0.003632, +0.005477]`, containing zero) while being 3.93× smaller and 1.2–1.4× faster, and
+this session independently reproduced that finding with its own calibration methodology before
+promoting it: **0.7981 FP32 vs 0.8037 INT8**, dev-calibrated, measured once on test, model only. Both
+figures are the *model alone*, no format or checksum gate — the fair comparison for what this module
+actually ships, since it has no such gate itself.
+
+These are not two sizes of the same thing: GLiNER is 15.4× the parameters and 57.8× the ONNX size of
 the token classifier. That difference is a large part of what the numbers below show, and it's worth
 holding in mind while reading them.
 
@@ -85,111 +95,116 @@ holding in mind while reading them.
 GLiNER's frozen production config only asks for three labels, so a fair head-to-head is restricted
 to what both models can be scored on: the taxonomy's `FULLNAME`, `ORG`, and `STREET`, matched to
 GLiNER's `person`, `company`, and `postal address` respectively. Measured fresh, in this session, on
-the same 156-document test split of the Finance & Banking Gold v1 corpus that `6x384g` v1.2.0's own
+the same 156-document test split of the Finance & Banking Gold v1 corpus that `6x384gf`'s own
 headline number was measured on (248 gold entities across the three tags), entity-level exact
 character-span match, no format/checksum gate:
 
 | | Precision | Recall | F1 | tp | fp | fn |
 |---|---:|---:|---:|---:|---:|---:|
 | **GLiNER** (3 labels, thr 0.60/0.40) | 0.7937 | 0.8065 | **0.8000** | 200 | 52 | 48 |
-| **mmBERT `6x384g`** (same 3 tags only, thr 0.92) | 0.7336 | 0.7218 | 0.7276 | 179 | 65 | 69 |
+| **mmBERT `6x384gf` INT8** (same 3 tags only, thr 0.98) | 0.7826 | 0.7258 | 0.7531 | 180 | 50 | 68 |
 
 | Tag | Gold | GLiNER P/R/F1 | mmBERT P/R/F1 |
 |---|---:|---:|---:|
 | `FULLNAME` (person) | 124 | 0.939 / 1.000 / **0.969** | 1.000 / 1.000 / **1.000** |
-| `ORG` (company) | 92 | 0.854 / 0.826 / **0.840** | 0.261 / 0.250 / **0.256** |
-| `STREET` (postal address) | 32 | 0.000 / 0.000 / **0.000** | 1.000 / 1.000 / **1.000** |
+| `ORG` (company) | 92 | 0.854 / 0.826 / **0.840** | 0.333 / 0.272 / **0.299** |
+| `STREET` (postal address) | 32 | 0.000 / 0.000 / **0.000** | 1.000 / 0.969 / **0.984** |
 
 On this narrow slice GLiNER's overall F1 is higher, entirely on the strength of `ORG`: zero-shot
-`company` finds organizations the fixed taxonomy's `ORG` class mostly doesn't (this repository's own
-`MODEL_REPORT.md` puts `6x384g`'s calibrated `ORG` F1 at 0.256, diagnosed there as a span-boundary
-problem rather than a missed-entity one). Investigated further for this README: of the 92 gold `ORG`
-spans, 23 match exactly and the other 69 break down as follows —
+`company` finds organizations the fixed taxonomy's `ORG` class mostly doesn't. Investigated for this
+README: of the 92 gold `ORG` spans, 25 match exactly and the other 67 break down as follows —
 
 | Mechanism | Mismatches | What happens |
 |---|---:|---|
-| Trailing period fused away | 31 (45%) | The gold set formats some fields as `key=value;` with no space — e.g. `CedentePrestatore=Gruppo Nordest S.n.c.; IdFiscale=...`. The tokenizer merges the abbreviation's final `.` with the following `;` into one sub-token, which the model must label as a whole; it almost always calls that fused token `O`, so the predicted span is the gold span minus its last character. |
-| Extra context absorbed | 22 (32%) | The mirror image: a sentence-ending `.` fused onto the abbreviation's own `.` (`"...S.r.l.."`) gets labelled `I-ORG` as a whole, extending the span by one character; separately, generic words that reliably precede a company mention in this data (`PSP `, `Impresa `) get pulled into the span. |
-| Mixed: both boundaries off at once | 8 (12%) | Usually two of the mechanisms above landing on the same span together — an `Impresa ` prefix absorbed on the left *and* a trailing period lost on the right, or a dropped leading word (below) compounded with an extra trailing period. |
-| A specific leading word dropped, cleanly | 4 (6%) | `Credito` — an ordinary Italian noun ("credit") reused here as a company-name prefix (`Credito Tirreno S.p.A.`) — scores `O` at ~0.99 even in a clean, unambiguous sentence: the model has not reliably learned to read it as part of a name rather than as the common word. |
-| Below the calibrated threshold | 4 (6%) | A correctly-bounded prediction scores 0.879–0.914 — under 0.92 — and is cut by calibration, not by a boundary error. |
+| Trailing period fused away | 27 (40%) | The gold set formats some fields as `key=value;` with no space — e.g. `CedentePrestatore=Gruppo Nordest S.n.c.; IdFiscale=...`. The tokenizer merges the abbreviation's final `.` with the following `;` into one sub-token, which the model must label as a whole; it almost always calls that fused token `O`, so the predicted span is the gold span minus its last character. |
+| Extra context absorbed | 20 (30%) | The mirror image: a sentence-ending `.` fused onto the abbreviation's own `.` (`"...S.r.l.."`) gets labelled `I-ORG` as a whole, extending the span by one character; separately, generic words that reliably precede a company mention in this data (`Impresa `) get pulled into the span. |
+| Below the calibrated threshold | 17 (25%) | A correctly-bounded prediction scores 0.833–0.975 — under 0.98 — and is cut by calibration, not by a boundary error. Higher here than on the FP32-scale model this replaced, because a higher calibrated threshold (0.98, chosen for this smaller graph) always cuts more borderline-but-correct predictions, not because boundaries got worse. |
+| Mixed: both boundaries off at once | 2 (3%) | An `Impresa ` prefix absorbed on the left *and* a trailing period lost on the right, on the same span. |
+| A specific leading word dropped, cleanly | 1 (1%) | `Credito` — an ordinary Italian noun ("credit") reused here as a company-name prefix (`Credito Aurora S.p.A.`) — scores `O` even in a clean, unambiguous sentence: the model has not reliably learned to read it as part of a name rather than as the common word. |
 
-The first three rows (88% of mismatches) are boundary artifacts, not missed entities — verified by
-inspecting the model's own per-sub-token probabilities: `I-ORG` above 0.94 on every character of the
-entity except the fused punctuation token, which scores `O` at 0.98+. The dominant one is specific to
-how this gold set formats some fields (`key=value;`, no space before the punctuation); in every case
-the core company name is still correctly bounded and would still be masked, off by one shared
-punctuation character or one generic precursor word. Exact-span-match F1 counts these identically to
-a fully missed entity, which is why 0.256 understates what a redaction pipeline built on this model
-would actually achieve here, more than the relaxed-match number in `MODEL_REPORT.md` already
-suggested. Only the last two rows (~12%) are genuine: `Credito` specifically, and four predictions
-cut by calibration rather than by a boundary error.
-`scripts/investigate_org_boundary_errors.py` reproduces this exact breakdown against any gold set and
-model directory in the same shape.
+The first two rows plus the mixed one (73% of mismatches) are boundary artifacts, not missed
+entities — verified by inspecting the model's own per-sub-token probabilities: `I-ORG` above 0.94 on
+every character of the entity except the fused punctuation token, which scores `O` at 0.98+. The
+dominant one is specific to how this gold set formats some fields (`key=value;`, no space before the
+punctuation); in every case the core company name is still correctly bounded and would still be
+masked, off by one shared punctuation character or one generic precursor word. Exact-span-match F1
+counts these identically to a fully missed entity, so 0.299 understates what a redaction pipeline
+built on this model would actually achieve here. The calibration cutoffs (25%) are a real
+precision/recall trade-off, not an error, and only `Credito` (1%) is a genuine boundary weakness.
+`scripts/investigate_org_boundary_errors.py --mmbert-onnx` reproduces this exact breakdown against
+any gold set and model directory in the same shape.
 
 `FULLNAME`/`person` is close to a tie, both near-perfect. `STREET` is the opposite extreme: GLiNER
 finds **zero** of the 32 gold spans under the `postal address` prompt, where the fixed-taxonomy model
-is perfect. This is not a fluke of this dataset — an earlier, differently-scoped evaluation in this
-workspace (`aliasit-pii-gold-v1`, 114 documents, the phileas-pheye-onnx `models-v1.0.0` release) found
-the same frozen config's `address` F1 at 0.120–0.160, its weakest category there too, against `person`
-at 0.47–0.51. The likely reason generalizes across both datasets: this gold set's `STREET` spans are
-bare street names and numbers (`Via Garibaldi 24`), and GLiNER's zero-shot `postal address` prompt
-appears calibrated toward a fuller address string, not an isolated street name — a zero-shot label's
-wording is not free of the assumptions behind it, and this is a concrete case of the "Labels" section
-below biting in practice, not a hypothetical.
+gets all but one. This is not a fluke of this dataset — an earlier, differently-scoped evaluation in
+this workspace (`aliasit-pii-gold-v1`, 114 documents, the phileas-pheye-onnx `models-v1.0.0` release)
+found the same frozen config's `address` F1 at 0.120–0.160, its weakest category there too, against
+`person` at 0.47–0.51. The likely reason generalizes across both datasets: this gold set's `STREET`
+spans are bare street names and numbers (`Via Garibaldi 24`), and GLiNER's zero-shot `postal address`
+prompt appears calibrated toward a fuller address string, not an isolated street name — a zero-shot
+label's wording is not free of the assumptions behind it, and this is a concrete case of the "Labels"
+section below biting in practice, not a hypothetical.
 
-**Why not all 22 tags.** mmBERT's full-taxonomy number — F1 0.8548 exact, all 22 categories, format
-and checksum gate, calibrated threshold — has no GLiNER counterpart in this comparison. GLiNER is
-zero-shot, so nothing stops asking it for `AMOUNT`, `IBAN`, `CF`, or any other of the remaining 19
-tags; nothing in this workspace has *evaluated* it against them, because the frozen production config
-this section reuses was deliberately scoped to the three categories a prior evaluation found GLiNER
-usable for. Presenting a from-scratch 22-label zero-shot run as comparable to a model specifically
-distilled and calibrated against that exact taxonomy would overstate what either number means; the
-honest comparison is the one above, on the categories both were actually measured on.
+**Why not all 22 tags.** `6x384gf`'s full-taxonomy number — F1 0.8365 exact (FP32; the INT8 graph's
+own full-taxonomy number was not separately measured with the format/checksum gate this session used
+only for the model-only comparisons above), all 22 categories, format and checksum gate, calibrated
+threshold — has no GLiNER counterpart in this comparison. GLiNER is zero-shot, so nothing stops
+asking it for `AMOUNT`, `IBAN`, `CF`, or any other of the remaining 19 tags; nothing in this workspace
+has *evaluated* it against them, because the frozen production config this section reuses was
+deliberately scoped to the three categories a prior evaluation found GLiNER usable for. Presenting a
+from-scratch 22-label zero-shot run as comparable to a model specifically distilled against that
+exact taxonomy would overstate what either number means; the honest comparison is the one above, on
+the categories both were actually measured on.
 
 ### Performance: same protocol, three sequence lengths
 
-Same measurement protocol this repository already uses for the student models
-(`onnx_median_ms` in `docs/student-models-v1.2.0.json`): onnxruntime, `CPUExecutionProvider`, FP32,
-batch 1, 4 intra-op threads, 1 inter-op thread, 10 warm-up runs discarded, 50 timed iterations,
-median reported, direct onnxruntime calls rather than through this module's Java wrapper, for both
-models. mmBERT's numbers are the ones already published for `6x384g`; GLiNER's were measured in this
-session, same machine, fed the equivalent six-tensor input at each sequence length (`words_mask`
-giving every token its own word — an upper bound on span-enumeration cost, since
-real text averages roughly 1.7–2.4 sub-tokens per word on this GLiNER checkpoint, measured directly
-elsewhere in this README).
+onnxruntime, `CPUExecutionProvider`, batch 1, 4 intra-op threads, 1 inter-op thread, 10 warm-up runs
+discarded, 50 timed iterations, median reported, direct onnxruntime calls rather than through this
+module's Java wrapper, for both models, measured in this session on the same machine so the ratio is
+not exposed to cross-machine drift — the [quantization release
+notes](https://github.com/mapo80/rizzo-pii/releases/tag/student-models-v1.2.0) measured that drift
+directly for FP32-vs-INT8 on the same graph (one identical run timed 129.52 ms and 110.78 ms hours
+apart) and found it larger than the difference the comparison was trying to measure, which is why
+same-machine, same-session numbers matter here rather than citing each model's own previously
+published figures at face value.
 
-| Sequence length | GLiNER median | mmBERT `6x384g` median | GLiNER ÷ mmBERT |
+| Sequence length | GLiNER median | mmBERT `6x384gf` INT8 median | GLiNER ÷ mmBERT |
 |---:|---:|---:|---:|
-| 128 sub-tokens | 106.3 ms | 11.6 ms | 9.2× |
-| 512 sub-tokens | 485.8 ms | 51.1 ms | 9.5× |
-| 2,048 sub-tokens | 3,148.8 ms | 337.6 ms | 9.3× |
+| 128 sub-tokens | 106.3 ms | 9.3 ms | 11.4× |
+| 512 sub-tokens | 485.8 ms | 40.9 ms | 11.9× |
+| 2,048 sub-tokens | 3,148.8 ms | 288.3 ms | 10.9× |
 
-The ratio is essentially flat across all three lengths (~9.3×), tracking the 8.8× parameter-count
-difference closely — this is size doing what size does, not an algorithmic gap. Note the units:
-mmBERT's document-level throughput (roughly 5,000–5,300 words/second, linear in document length; see "Long input"
-below) is a different, larger-scale measurement than this per-forward-pass benchmark; the two are not
-directly comparable to each other, only within each table to its own model.
+The ratio is essentially flat across all three lengths (~11.4×), tracking size more than any
+algorithmic gap — GLiNER's own encoder is larger, and it runs FP32 against mmBERT's INT8 here on top
+of that. Note the units: mmBERT's document-level throughput (linear in document length; see "Long
+input" below) is a different, larger-scale measurement than this per-forward-pass benchmark; the two
+are not directly comparable to each other, only within each table to its own model.
 
 ### Size
 
-| | Parameters | ONNX (FP32) |
+| | Parameters | ONNX |
 |---|---:|---:|
-| GLiNER (`gliner_multi_pii-v1`) | 288.95 M | 1,103.6 MB |
-| mmBERT `6x384g` v1.2.0 | 32.77 M | 131.2 MB |
-| Ratio | 8.8× | 8.4× |
+| GLiNER (`gliner_multi_pii-v1`, FP32) | 288.95 M | 1,103.6 MB |
+| mmBERT `6x384gf` v1.2.0 (INT8) | 18.75 M | 19.1 MB |
+| Ratio | 15.4× | 57.8× |
+
+The size ratio is larger than the parameter ratio because the two aren't measured at the same
+precision: GLiNER here is FP32 (4 bytes/parameter), mmBERT is INT8 (roughly 1 byte/parameter plus
+per-channel scales) — quantization is exactly why this comparison is no longer merely "fewer
+parameters," on top of already having fewer of them.
 
 ### Reading the three tables together
 
 - **On a fixed, known taxonomy** — the compliance-filter case the "Two model families" table above
-  already argues for — mmBERT wins on cost by a wide margin (8.8× fewer parameters, ~9.3× faster,
-  8.4× smaller on disk) and matches or beats GLiNER category by category once distilled and
-  calibrated on that taxonomy specifically, `ORG`'s boundary problem being the one open exception in
-  either direction.
+  already argues for — mmBERT wins on cost by a very wide margin (15.4× fewer parameters, ~11.4×
+  faster, 57.8× smaller on disk) and matches or beats GLiNER on two of the three categories once
+  distilled, quantized and calibrated on that taxonomy specifically; `ORG`'s boundary problem (mostly
+  a tokenizer artifact on this gold set's field formatting, detailed above) is the one open exception.
 - **GLiNER's zero-shot flexibility has a real, measured cost attached**, not just an architectural
-  one: roughly an order of magnitude slower and larger for this pairing, for quality that is *better*
-  on one category (`ORG`), *worse to the point of zero* on another (`STREET`) with the frozen config
-  used here, and untested against the sixteen categories mmBERT was actually distilled for.
+  one: an order of magnitude slower and dramatically larger for this pairing, for quality that is
+  *better* on one category (`ORG`), *worse* on another (`STREET`, though only by one span here) with
+  the frozen config used here, and untested against the sixteen categories mmBERT was actually
+  distilled for.
 - **Neither number is free-standing.** The `STREET` result specifically demonstrates why: it is not
   that GLiNER cannot find street names, it is that `postal address` was the wrong prompt for how this
   gold set annotates them. A different label choice, or per-category tuning of the sort this frozen
@@ -197,12 +212,14 @@ directly comparable to each other, only within each table to its own model.
   another measurement would say which.
 
 Full methodology for the quality table — dataset provenance, split integrity, negative controls — is
-in `working/finance-banking-gold/MODEL_REPORT.md` (mmBERT's own repository) and
+in `working/finance-banking-gold/MODEL_REPORT.md` (mmBERT's own repository), the [quantization
+release notes](https://github.com/mapo80/rizzo-pii/releases/tag/student-models-v1.2.0) (the INT8
+recipe and its own independent quality/speed evaluation), and
 `working/confronto-rizzo-student-fastino-phileas.md` (the prior GLiNER evaluation this section's
-config comes from), both outside this repository. The quality table reproduces with
-`scripts/gliner_vs_mmbert_comparison.py` against your own copy of the gold set and both model
-directories; the performance table's GLiNER row reproduces with `scripts/benchmark_gliner_onnx.py`
-against its ONNX graph directly (mmBERT's own numbers reproduce the same way `docs/student-models-v1.2.0.json` already documents).
+config comes from), all outside this repository. The quality table reproduces with
+`scripts/gliner_vs_mmbert_comparison.py --mmbert-onnx` against your own copy of the gold set and both
+model directories; the performance table reproduces with `scripts/benchmark_gliner_onnx.py` and
+`scripts/benchmark_token_classifier_onnx.py` against each graph directly.
 
 ## Requirements
 
@@ -328,7 +345,7 @@ file, a malformed config, a `words_splitter_type` other than `whitespace`, a non
   "overlap_words": 20,
   "max_tokens": 8192,
   "words_splitter_type": "whitespace",
-  "calibrated_threshold": 0.92
+  "calibrated_threshold": 0.98
 }
 ```
 
@@ -397,7 +414,7 @@ it lives in the directory.
 When the caller has expressed **no** threshold of its own — neither programmatically nor through the
 property or environment variable — `LocalDetectorFactory` uses the declared value in place of the
 library default. The library default of 0.5 exists to reproduce upstream GLiNER; applying it to a
-model calibrated at 0.92 is how a redaction component ends up quietly over-detecting. A threshold
+model calibrated at 0.98 is how a redaction component ends up quietly over-detecting. A threshold
 the caller did set is never overridden, and the distinction is explicit
 (`LocalPhEyeOptions.thresholdExplicit()`) rather than inferred from the value.
 
@@ -644,7 +661,7 @@ off-by-one in a window offset, a boundary entity counted twice, a tie broken the
 mvn -q test-compile dependency:build-classpath -Dmdep.outputFile=target/classpath.txt -Dmdep.includeScope=test
 python scripts/cross_check_against_reference.py \
     --model-dir MODEL_DIR --weights HF_CHECKPOINT \
-    --documents corpus.jsonl --threshold 0.92
+    --documents corpus.jsonl --threshold 0.98
 ```
 
 It runs the Python reference and this module over the same documents and reports every document

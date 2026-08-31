@@ -47,7 +47,7 @@ class TokenClassifierUnicodeParityTest {
     }
 
     private static LocalTokenClassifierDetector detector() throws Exception {
-        return new LocalTokenClassifierDetector(modelDirectory(), LocalPhEyeOptions.withThreshold(0.92));
+        return new LocalTokenClassifierDetector(modelDirectory(), LocalPhEyeOptions.withThreshold(0.98));
     }
 
     @Test
@@ -56,7 +56,7 @@ class TokenClassifierUnicodeParityTest {
 
         // The tokenizer offsets are code-point indices; a Java String is indexed by code units. One
         // emoji is one surrogate pair, so every later span used to come back one character early.
-        final String text = "😀 Il sig. Mario Rossi abita a Roma.";
+        final String text = "😀 Il sig. Mario Rossi, residente a Roma, ha firmato il contratto.";
 
         try (final var detector = detector()) {
             final List<PhEyeSpan> spans = detector.detect(text, List.of("FULLNAME", "CITY"), "", 0);
